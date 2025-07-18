@@ -1,14 +1,12 @@
+// app.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('./config');
 const db = require('./db');
-const { createTables } = require('./models');
-
-// Import the seeding function from seed.js
-const { seedDatabase } = require('./seed'); // <<< ADDED THIS LINE
+const { createTables } = require('./models'); // Still needed for /create_tables endpoint
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; // Render will provide the PORT environment variable
 
 // Middleware to parse JSON request bodies
 app.use(bodyParser.json());
@@ -23,7 +21,8 @@ function requireApiKey(req, res, next) {
 }
 
 // --- Database Initialization Endpoint ---
-// This endpoint should be hit once to create tables after deployment
+// This endpoint should be hit once to create tables after initial deployment.
+// It's kept here for convenience but is typically not used in daily operations.
 app.get('/create_tables', async (req, res) => {
     try {
         await createTables();
@@ -33,22 +32,6 @@ app.get('/create_tables', async (req, res) => {
         res.status(500).json({ error: `Failed to create tables: ${error.message}` });
     }
 });
-
-// --- TEMPORARY API Endpoint for Seeding ---
-// IMPORTANT: REMOVE THIS ENDPOINT AFTER YOU HAVE SUCCESSFULLY SEEDED YOUR DATABASE!
-app.get('/seed_db', requireApiKey, async (req, res) => { // <<< ADDED THIS BLOCK
-    try {
-        // Ensure that db.pool.end() is NOT called in seed.js if it's being called from here,
-        // as it would close the connection pool for the running web service.
-        await seedDatabase(); // Call the imported seeding function
-        res.status(200).json({ message: "Database seeded successfully!" });
-    } catch (error) {
-        console.error("Error during /seed_db:", error);
-        res.status(500).json({ error: `Failed to seed database: ${error.message}` });
-    }
-});
-// --- END TEMPORARY API Endpoint for Seeding ---
-
 
 // --- API Endpoints ---
 
@@ -190,7 +173,6 @@ app.listen(port, () => {
     console.log(`AutoSherpa backend listening at http://localhost:${port}`);
     console.log(`Database URI: ${config.databaseUrl}`);
     console.log(`Backend API Key (first 5 chars): ${config.aisensyBackendApiKey.substring(0, 5)}...`);
-    // Optional: Call createTables() here if you want to ensure tables exist on every app start
-    // However, for production, it's better to run migrations separately.
+    // The createTables() call on app start is commented out for production best practices.
     // createTables().catch(err => console.error("Error during startup table creation:", err));
 });
