@@ -1,4 +1,3 @@
-// app.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('./config');
@@ -81,12 +80,13 @@ app.get('/cars', requireApiKey, async (req, res) => {
                 return res.status(400).json({ error: "Invalid budget_range provided" });
         }
 
+        // SELECT query for cars, matching CSV column names
         let queryText = `
-            SELECT car_id, serial_number, model, manufacturing_year as year, mileage_km as mileage,
-                   estimated_selling_price as price, image_url, fuel_type,
-                   transmission_type, owner_serial_number as num_owners, ready_for_sales as is_available
+            SELECT "car_id", "SerialNumber", "Model", "ManufacturingYear" as year, "MileageKM" as mileage,
+                   "EstimatedSellingPrice" as price, image_url, "FuelType" as fuel_type,
+                   "TransmissionType" as transmission_type, "OwnerSerialNumber" as num_owners, "ReadyforSales" as is_available
             FROM cars
-            WHERE estimated_selling_price >= $1 AND estimated_selling_price < $2 AND ready_for_sales = TRUE
+            WHERE "EstimatedSellingPrice" >= $1 AND "EstimatedSellingPrice" < $2 AND "ReadyforSales" = TRUE
         `;
         const queryParams = [minPrice, maxPrice];
         let paramIndex = 3; // $1 and $2 are already used
@@ -128,9 +128,9 @@ app.post('/test_drives', requireApiKey, async (req, res) => {
         // Fetch car model name for storage in test_drives (optional, but requested by schema)
         let carModelName = null;
         if (car_id) {
-            const carResult = await db.query('SELECT model FROM cars WHERE car_id = $1;', [car_id]);
+            const carResult = await db.query('SELECT "Model" FROM cars WHERE car_id = $1;', [car_id]); // Use "Model" from CSV
             if (carResult.rows.length > 0) {
-                carModelName = carResult.rows[0].model;
+                carModelName = carResult.rows[0].Model; // Use "Model" from CSV
             }
         }
 

@@ -1,160 +1,640 @@
- // seed.js
-    const db = require('./db');
-    const { createTables } = require('./models');
+const db = require('./db');
+const { createTables } = require('./models');
 
-    // Wrap your existing seeding logic in an async function
-    async function seedDatabase() {
-        console.log("Starting database seeding...");
-        await createTables(); // Ensure tables exist before seeding (good practice)
+// Wrap your existing seeding logic in an async function
+async function seedDatabase() {
+    console.log("Starting database seeding with first 500 cars...");
+    await createTables(); // Ensure tables exist before seeding (good practice)
 
-        try {
-            // Insert Brands (Make)
-            const brands = [
-                { name: "Maruti Suzuki", logoUrl: "https://placehold.co/100x50/FF0000/FFFFFF?text=Maruti" },
-                { name: "Hyundai", logoUrl: "https://placehold.co/100x50/0000FF/FFFFFF?text=Hyundai" },
-                { name: "Tata Motors", logoUrl: "https://placehold.co/100x50/00FF00/FFFFFF?text=Tata" },
-                { name: "Mahindra", logoUrl: "https://placehold.co/100x50/FFFF00/000000?text=Mahindra" },
-                { name: "Toyota", logoUrl: "https://placehold.co/100x50/FFA500/FFFFFF?text=Toyota" }
-            ];
+    try {
+        // Data for the first 500 cars from your provided CSV
+        const rawCsvData = `Serial Number,Make,Model,Variant,Color,Fuel Type,Registration Number,Registration Date,RC Status,RC Expiry Date,Chassis Number,Engine Number,Manufacturing Year,Manufacturing Month,Owner Serial Number,Mileage (KM),Cubic Capacity (CC),Emission Norms,Transmission Type,Vehicle Category,Insurance Type,Insurance Expiry Date,Estimated Selling Price,Ready for Sales
+1,Honda,Amaze,Amaze VXi,Blue,Petrol,RJ49AB0001,2016-08-07,Expired,2025-10-06,MA1oU3559676,ENGGN73020,2016,6,1,69376,800,BS6,Automatic,Certified,Third Party,2025-11-14,992385,Yes
+2,Mahindra,Thar,Thar VXi,Silver,Petrol,UP19AB0002,2023-05-18,Expired,2027-06-24,MA1bT5163842,ENGuV70026,2020,8,1,102013,1000,BS4,Manual,Certified,Zero Depreciation,2025-11-07,309293,Yes
+3,Tata,Punch,Punch ZXi,Silver,Electric,TN77AB0003,2023-11-23,Expired,2027-10-30,MA1HS4308509,ENGUh36460,2018,8,2,75861,2000,BS6,Manual,Certified,Third Party,2025-09-25,735772,No
+4,Toyota,Innova,Innova VXi,Grey,Petrol,HR82AB0004,2019-03-29,Active,2025-08-22,MA1IM2051216,ENGkh43075,2022,5,4,17501,1200,BS4,Manual,Certified,Third Party,2025-08-09,762286,No
+5,Ford,Ecosport ,TITANIUM ,White,Petrol,KA24AB0005,2018-04-30,Expired,2025-09-07,MA1cc7264472,ENGvD25012,2013,11,3,138696,2000,BS4,Manual,Certified,Comprehensive,2025-08-06,310612,No
+6,Volkswagen,Taigun,Taigun LXi,Silver,Electric,WB14AB0006,2020-11-08,Expired,2026-10-20,MA1NH9531667,ENGeU11097,2015,7,3,146095,800,BS4,Manual,Certified,Third Party,2026-04-05,1175743,Yes
+7,Kia,Sonet,Sonet SX,White,Electric,MH29AB0007,2016-11-19,Expired,2025-08-26,MA1yt8664243,ENGfz97422,2018,2,1,39065,1000,BS6,Manual,Non Certified,Zero Depreciation,2026-01-29,393522,Yes
+8,Renault,Triber,Triber SX,Grey,Diesel,RJ15AB0008,2020-11-07,Expired,2026-04-07,MA1Ua5205092,ENGOG39168,2022,11,3,85453,800,BS6,Automatic,Certified,Comprehensive,2025-10-25,694059,Yes
+9,Kia,Sonet,Sonet VXi,Red,Electric,GJ54AB0009,2016-01-27,Active,2028-03-29,MA1Ev6840578,ENGqa51665,2015,8,4,132200,800,BS6,Manual,Certified,Zero Depreciation,2026-03-03,535964,Yes
+10,Mahindra,Thar,Thar ZXi,Silver,Electric,KA22AB0010,2020-06-04,Expired,2027-02-12,MA1xx2774077,ENGyM37263,2022,10,1,126137,1000,BS6,Automatic,Certified,Zero Depreciation,2025-07-14,858912,No
+11,Hyundai,Venue,Venue ZXi,Black,Electric,DL46AB0011,2018-02-12,Active,2026-01-13,MA1xv3810049,ENGRN48144,2017,11,1,87639,1500,BS4,Automatic,Certified,Comprehensive,2026-04-18,633877,Yes
+12,Kia,EV6,EV6 ZXi,Red,Electric,RJ26AB0012,2023-02-04,Expired,2026-10-08,MA1aY1220347,ENGGv53127,2016,12,2,77496,1500,BS4,Manual,Certified,Third Party,2026-03-15,331929,No
+13,Mahindra,XUV300,XUV300 ZXi,Silver,Diesel,KA23AB0013,2017-07-19,Active,2027-04-08,MA1lB4241278,ENGsK11370,2014,4,1,106689,800,BS6,Manual,Certified,Comprehensive,2026-02-18,1440976,No
+14,Honda,WR-V,WR-V EX,Blue,Diesel,MH95AB0014,2020-03-02,Expired,2026-03-18,MA1Xx6349510,ENGwq51685,2021,4,3,130962,1000,BS6,Automatic,Certified,Zero Depreciation,2026-06-29,1353870,Yes
+15,Mahindra,XUV300,XUV300 EX,White,Electric,UP66AB0015,2017-08-01,Active,2026-07-29,MA1lL4242023,ENGGW53356,2015,11,4,149145,1500,BS6,Manual,Certified,Comprehensive,2026-06-16,995384,Yes
+16,Kia,Sonet,Sonet EX,Silver,Petrol,MH63AB0016,2021-09-23,Active,2025-07-11,MA1pK7950681,ENGYz72133,2013,10,4,78070,1000,BS4,Manual,Certified,Third Party,2025-11-15,1039568,No
+17,Kia,EV6,EV6 EX,Black,Diesel,RJ46AB0017,2017-04-30,Active,2025-11-24,MA1Il6447128,ENGYT86748,2015,7,4,54625,800,BS6,Manual,Certified,Zero Depreciation,2026-06-25,1364074,Yes
+18,Hyundai,i20,i20 SX,Red,Electric,WB87AB0018,2019-10-24,Active,2025-11-15,MA1Ks6445007,ENGbA71717,2017,4,1,75202,1000,BS6,Manual,Certified,Comprehensive,2026-06-13,1415581,Yes
+19,Hyundai,i20,i20 ZXi,Blue,CNG,WB69AB0019,2019-06-04,Active,2025-07-31,MA1WK6766732,ENGzN16666,2023,6,3,135145,2000,BS6,Automatic,Certified,Third Party,2026-06-04,1272009,No
+20,Hyundai,i20,i20 SX,Green,Petrol,WB42AB0020,2024-02-04,Active,2028-01-24,MA1Ae2810304,ENGck71892,2015,10,1,121879,800,BS6,Manual,Certified,Comprehensive,2026-04-02,1449071,Yes
+21,Skoda,Slavia,Slavia LXi,White,CNG,GJ96AB0021,2023-03-23,Active,2026-03-09,MA1oR6467326,ENGAo87981,2020,7,1,122122,1200,BS4,Automatic,Certified,Zero Depreciation,2026-04-15,320199,No
+22,Hyundai,i10,i10 VXi,Red,Electric,RJ11AB0022,2022-12-26,Expired,2026-03-21,MA1BM5704509,ENGbG39938,2019,11,2,56849,1500,BS4,Manual,Certified,Third Party,2025-12-07,737900,No
+23,Kia,Carens,Carens SX,Silver,Diesel,KA26AB0023,2018-07-30,Active,2027-02-13,MA1Gy3849149,ENGHL26109,2015,9,4,91257,1200,BS4,Automatic,Certified,Comprehensive,2026-01-25,1345991,Yes
+24,Toyota,Urban Cruiser,Urban Cruiser EX,Black,CNG,GJ74AB0024,2021-12-27,Active,2025-10-18,MA1UC8746545,ENGWI31806,2013,2,1,29754,1500,BS6,Manual,Certified,Zero Depreciation,2026-02-09,1032492,No
+25,Toyota,Glanza,Glanza SX,White,CNG,RJ35AB0025,2023-08-30,Expired,2026-07-02,MA1uw2423576,ENGtT65299,2017,12,3,73856,800,BS4,Automatic,Certified,Third Party,2025-08-01,645448,Yes
+26,Volkswagen,Taigun,Taigun EX,Blue,Electric,MH28AB0026,2016-01-19,Active,2028-06-09,MA1bp6893008,ENGbN61901,2020,12,4,52667,1200,BS4,Manual,Certified,Comprehensive,2026-05-15,844003,No
+27,Honda,WR-V,WR-V ZXi,Red,Diesel,HR98AB0027,2018-07-06,Expired,2027-08-20,MA1CH9476068,ENGDN78035,2018,10,2,105772,1500,BS6,Manual,Certified,Third Party,2025-07-13,1382557,Yes
+28,Maruti,Ertiga,Ertiga ZXi,Grey,Diesel,UP85AB0028,2020-07-03,Expired,2025-11-17,MA1dt1683082,ENGtH01721,2023,11,3,89526,800,BS4,Manual,Non Certified,Zero Depreciation,2026-06-28,436995,Yes
+29,Maruti,Swift,Swift EX,Silver,Electric,HR43AB0029,2021-08-12,Active,2027-06-04,MA1cv4666910,ENGWm93286,2020,3,4,86140,800,BS6,Automatic,Certified,Third Party,2025-10-19,425510,No
+30,Skoda,Octavia,Octavia LXi,Red,Electric,MH61AB0030,2019-07-18,Expired,2027-02-03,MA1Ca9202877,ENGAW13317,2023,4,4,62795,2000,BS6,Automatic,Certified,Zero Depreciation,2026-02-21,701257,No
+31,Volkswagen,Ameo,Highline,White,Petrol,KA87AB0031,2022-08-09,Active,2027-12-05,MA1TR0162240,ENGRU38992,2016,6,2,84921,800,BS4,Automatic,Certified,Third Party,2025-11-18,1006909,No
+32,Hyundai,Verna,Verna ZXi,Silver,Petrol,TN68AB0032,2021-03-28,Active,2027-07-23,MA1RL6669977,ENGiX51901,2023,3,4,143314,2000,BS4,Manual,Certified,Zero Depreciation,2026-03-19,617248,No
+33,Kia,Carens,Carens LXi,White,CNG,MH48AB0033,2020-04-20,Expired,2026-09-18,MA1vk8736450,ENGUF25231,2016,7,2,49459,2000,BS4,Manual,Certified,Third Party,2025-09-09,1205092,Yes
+34,Mahindra,Thar,Thar ZXi,Silver,Diesel,KA45AB0034,2022-08-15,Active,2026-12-26,MA1qJ7536399,ENGFN54113,2022,4,3,60505,1000,BS4,Automatic,Non Certified,Comprehensive,2026-02-19,231826,Yes
+35,Kia,Carens,Carens SX,Green,Electric,DL86AB0035,2018-09-28,Active,2026-08-13,MA1VE3354236,ENGcf60493,2014,1,2,57290,800,BS4,Automatic,Certified,Comprehensive,2026-06-24,222153,No
+36,Tata,Punch,Punch VXi,Red,Petrol,TN63AB0036,2018-09-28,Active,2027-04-29,MA1QJ9533172,ENGWA39122,2015,12,2,30115,1500,BS4,Automatic,Certified,Comprehensive,2026-01-06,322155,Yes
+37,Hyundai,Verna,Verna ZXi,Blue,Petrol,WB86AB0037,2022-05-04,Active,2027-08-09,MA1To1374772,ENGkA77549,2023,2,2,113268,2000,BS6,Automatic,Certified,Zero Depreciation,2025-08-21,861410,No
+38,Kia,Carens,Carens EX,White,Diesel,MH38AB0038,2022-01-06,Active,2025-08-18,MA1Wc7382611,ENGSw98744,2022,11,3,96956,1200,BS6,Manual,Certified,Comprehensive,2025-07-20,1058448,No
+39,Skoda,Kushaq,Kushaq ZXi,Silver,Petrol,GJ25AB0039,2020-12-24,Expired,2028-01-18,MA1Sj0034790,ENGTL99903,2017,11,1,142275,800,BS4,Manual,Certified,Third Party,2025-11-15,1330087,Yes
+40,Maruti,Ertiga,Ertiga EX,Black,Electric,GJ98AB0040,2017-10-30,Expired,2025-09-30,MA1sm8015688,ENGnE33899,2022,6,3,75298,1500,BS6,Manual,Certified,Zero Depreciation,2026-06-04,438841,No
+41,Hyundai,Creta,Creta LXi,Black,Diesel,UP64AB0041,2015-11-06,Active,2027-06-01,MA1vu3793615,ENGBU15222,2014,10,1,84439,1000,BS4,Manual,Certified,Third Party,2025-10-08,1472018,Yes
+42,Kia,Sonet,Sonet EX,Black,Electric,MH39AB0042,2018-08-25,Expired,2027-02-13,MA1lm9092419,ENGnG31808,2018,2,1,14115,1200,BS4,Manual,Non Certified,Third Party,2026-01-29,966619,No
+43,Volkswagen,Polo,Polo ZXi,Red,Diesel,RJ13AB0043,2020-07-04,Active,2028-07-05,MA1Wx4483183,ENGcA75456,2016,2,2,80636,1200,BS6,Manual,Certified,Third Party,2025-09-07,719254,No
+44,Hyundai,i10,i10 VXi,Blue,CNG,DL97AB0044,2020-07-31,Expired,2027-01-22,MA1sF8762828,ENGkr97479,2018,7,1,59420,1500,BS6,Automatic,Certified,Comprehensive,2025-08-04,981627,No
+45,Volkswagen,Taigun,Taigun SX,Green,Petrol,HR76AB0045,2022-03-05,Active,2027-05-14,MA1bU9007311,ENGls14855,2014,5,1,121858,1000,BS6,Manual,Certified,Zero Depreciation,2025-07-31,257770,Yes
+46,Hyundai,Verna,Verna EX,Blue,Electric,UP41AB0046,2016-04-20,Active,2027-06-14,MA1dn2283210,ENGup98554,2021,11,3,128604,1000,BS4,Manual,Certified,Comprehensive,2025-08-26,423978,Yes
+47,Mahindra,XUV700,XUV700 ZXi,Green,Diesel,UP35AB0047,2016-04-12,Active,2025-11-19,MA1tb9941195,ENGrF85812,2016,7,2,20601,1500,BS6,Automatic,Non Certified,Zero Depreciation,2025-12-25,1430081,No
+48,Volkswagen,Taigun,Taigun SX,Red,Electric,HR12AB0048,2016-05-19,Expired,2027-11-11,MA1xG6559486,ENGKA94890,2014,11,3,10003,2000,BS6,Automatic,Certified,Third Party,2025-08-03,1483209,No
+49,Kia,Carens,Carens SX,White,Diesel,TN72AB0049,2020-03-06,Expired,2026-05-30,MA1KW9114413,ENGVi55949,2021,8,3,63616,1500,BS4,Manual,Certified,Zero Depreciation,2026-01-11,1242352,Yes
+50,Maruti,Alto,Alto LXi,Green,Petrol,WB88AB0050,2021-07-05,Active,2027-03-13,MA1kr3501070,ENGJK97670,2017,7,2,105861,2000,BS6,Automatic,Non Certified,Zero Depreciation,2026-03-14,400308,No
+51,Kia,Sonet,Sonet EX,Green,Electric,HR97AB0051,2019-12-18,Expired,2027-08-02,MA1fX1560401,ENGWg00888,2022,3,2,8070,1500,BS4,Automatic,Certified,Comprehensive,2026-05-20,1282163,No
+52,Toyota,Fortuner,Fortuner ZXi,Black,Electric,GJ56AB0052,2017-06-15,Active,2026-08-10,MA1db3739169,ENGVV99451,2016,10,3,51239,1200,BS6,Manual,Certified,Third Party,2026-05-26,1122913,Yes
+53,Toyota,Urban Cruiser,Urban Cruiser VXi,Grey,Electric,MH52AB0053,2016-03-26,Expired,2025-08-18,MA1yB9555023,ENGpL34031,2015,4,2,101002,800,BS4,Automatic,Certified,Comprehensive,2025-07-17,1072484,No
+54,Maruti,Swift,Swift SX,Green,CNG,TN93AB0054,2018-08-14,Active,2027-03-24,MA1RN4600093,ENGAc98108,2013,4,3,21147,1500,BS6,Automatic,Certified,Zero Depreciation,2026-02-17,1271175,Yes
+55,Tata,Tiago,Tiago SX,White,Electric,HR96AB0055,2019-03-25,Active,2026-01-05,MA1Jw1877742,ENGQQ30980,2019,12,2,148592,1200,BS6,Automatic,Certified,Comprehensive,2025-11-24,658447,Yes
+56,Hyundai,i10,i10 SX,Grey,CNG,UP70AB0056,2023-08-27,Expired,2026-03-11,MA1Dx4547225,ENGDj20651,2023,6,4,115499,2000,BS4,Manual,Certified,Third Party,2025-12-13,683840,Yes
+57,Honda,City,City EX,White,Diesel,WB46AB0057,2021-08-26,Expired,2027-02-16,MA1Xc6311314,ENGkG80686,2020,11,3,16146,1000,BS6,Manual,Certified,Third Party,2026-05-27,988119,Yes
+58,Maruti,Baleno,Baleno ZXi,Black,Electric,HR63AB0058,2018-08-18,Active,2027-07-27,MA1IL8770290,ENGGi11754,2021,11,2,94234,1000,BS4,Automatic,Certified,Zero Depreciation,2025-07-31,267118,No
+59,Mahindra,XUV300,XUV300 VXi,Red,CNG,HR28AB0059,2023-07-18,Active,2028-06-08,MA1pO8686714,ENGYb35705,2020,12,2,51742,1200,BS4,Automatic,Certified,Comprehensive,2025-10-19,1030047,No
+60,Renault,Kwid,Kwid ZXi,White,Diesel,RJ97AB0060,2021-10-11,Expired,2027-11-17,MA1MQ5540175,ENGPW67136,2018,1,4,55640,2000,BS4,Automatic,Certified,Zero Depreciation,2025-12-05,907102,No
+61,Honda,Jazz,Jazz VXi,Brown,CNG,MH41AB0061,2024-07-01,Active,2026-02-24,MA1iZ3851261,ENGNW81713,2019,6,1,124297,2000,BS4,Automatic,Non Certified,Zero Depreciation,2025-08-12,462941,No
+62,Skoda,Kushaq,Kushaq EX,Red,Electric,TN48AB0062,2015-11-18,Expired,2026-08-11,MA1Rk5380258,ENGoR71637,2020,11,2,51590,800,BS6,Manual,Certified,Third Party,2025-12-07,442135,No
+63,Hyundai,i20,i20 ZXi,Grey,Petrol,UP64AB0063,2023-08-15,Active,2025-08-04,MA1Dv7850630,ENGHV35275,2015,2,2,24679,800,BS6,Manual,Certified,Third Party,2025-08-30,374182,Yes
+64,Kia,Carens,Carens VXi,Green,Petrol,GJ29AB0064,2022-10-02,Active,2028-01-01,MA1DR3873442,ENGRJ29795,2019,4,1,77617,1500,BS6,Manual,Certified,Third Party,2026-06-28,739858,Yes
+65,Hyundai,Creta,Creta VXi,Grey,Electric,HR79AB0065,2018-12-26,Expired,2026-05-22,MA1Rm5926265,ENGXq96924,2014,9,4,121226,2000,BS4,Manual,Non Certified,Comprehensive,2026-05-31,1476551,Yes
+66,Toyota,Urban Cruiser,Urban Cruiser LXi,White,Electric,DL19AB0066,2017-02-05,Expired,2027-04-03,MA1Oa9147533,ENGPb28968,2013,7,2,11745,1000,BS4,Automatic,Certified,Comprehensive,2026-06-12,1317437,No
+67,Honda,Amaze,Amaze ZXi,Black,Electric,TN78AB0067,2018-05-14,Active,2027-11-08,MA1Bn1750831,ENGYE48302,2015,12,2,138171,1500,BS6,Manual,Certified,Zero Depreciation,2026-05-19,1122597,No
+68,Renault,Kwid,Kwid LXi,Green,Diesel,TN54AB0068,2018-07-08,Expired,2027-10-02,MA1Nn4723179,ENGwX63802,2018,2,2,85565,1500,BS6,Manual,Certified,Zero Depreciation,2026-02-06,1459605,Yes
+69,Volkswagen,Polo,Polo EX,Green,Petrol,WB20AB0069,2023-10-10,Expired,2026-08-09,MA1gf8219031,ENGWo39423,2014,11,1,24473,1200,BS6,Manual,Non Certified,Comprehensive,2025-07-20,1384822,Yes
+70,Volkswagen,Polo,Polo SX,Green,Diesel,MH21AB0070,2019-01-28,Expired,2026-10-21,MA1Mz8320187,ENGhg99980,2018,7,4,138908,1000,BS4,Automatic,Certified,Zero Depreciation,2026-05-28,1026207,No
+71,Renault,Kwid,Kwid EX,Red,Diesel,UP73AB0071,2023-07-17,Active,2027-12-03,MA1hz0719563,ENGlc74555,2018,9,4,90037,800,BS6,Manual,Certified,Zero Depreciation,2026-01-29,333384,No
+72,Toyota,Urban Cruiser,Urban Cruiser LXi,Silver,CNG,WB25AB0072,2023-10-12,Expired,2025-11-28,MA1Zz7729442,ENGlF36007,2014,6,2,33212,800,BS6,Automatic,Certified,Third Party,2026-01-04,306520,No
+73,Maruti,Baleno,Baleno EX,Silver,CNG,UP56AB0073,2024-03-16,Expired,2027-01-17,MA1Xh1129258,ENGAu92130,2021,10,4,126176,1200,BS6,Manual,Certified,Third Party,2025-08-17,1302443,Yes
+74,Maruti,Swift,Swift EX,Blue,Electric,KA92AB0074,2022-07-08,Active,2027-01-31,MA1WN5465858,ENGLQ06280,2015,4,2,66506,1500,BS6,Manual,Certified,Zero Depreciation,2025-09-08,785368,No
+75,Toyota,Glanza,Glanza VXi,Blue,Petrol,MH61AB0075,2017-06-27,Expired,2027-09-23,MA1PO8964837,ENGRJ17435,2015,8,2,147389,1000,BS4,Manual,Certified,Third Party,2025-11-11,1178949,Yes
+76,Volkswagen,Virtus,Virtus SX,Black,Diesel,KA55AB0076,2023-08-13,Active,2026-04-28,MA1Ft6956029,ENGBw96615,2016,8,3,88116,1500,BS4,Automatic,Certified,Third Party,2026-06-02,572355,No
+77,Tata,Nexon,Nexon VXi,Red,CNG,MH24AB0077,2017-03-16,Active,2025-08-24,MA1Fl2660160,ENGls47463,2014,1,3,74137,1500,BS6,Manual,Certified,Third Party,2025-08-26,684385,No
+78,Maruti,Ertiga,Ertiga ZXi,Blue,Diesel,KA57AB0078,2017-02-09,Active,2025-12-28,MA1Rc7520862,ENGHk68963,2015,5,2,138445,2000,BS4,Automatic,Certified,Comprehensive,2026-03-19,577250,Yes
+79,Tata,Altroz,Altroz ZXi,White,CNG,TN91AB0079,2015-10-01,Active,2027-09-25,MA1BS9085706,ENGko38675,2014,9,3,91529,1000,BS4,Manual,Certified,Zero Depreciation,2026-04-21,981605,Yes
+80,Honda,City,City SX,Black,Diesel,MH48AB0080,2020-10-01,Expired,2027-06-17,MA1wY6867130,ENGmw43536,2020,11,1,6655,800,BS4,Manual,Certified,Comprehensive,2025-10-16,588407,Yes
+81,Mahindra,Bolero,Bolero EX,Grey,Petrol,TN98AB0081,2022-02-19,Active,2027-06-09,MA1Ye4592660,ENGXy96443,2013,10,2,68326,1200,BS6,Manual,Certified,Third Party,2026-02-07,649424,No
+82,Toyota,Innova,Innova LXi,Red,CNG,HR65AB0082,2017-03-13,Expired,2025-12-03,MA1Mg8544550,ENGKj79946,2016,12,1,44961,800,BS4,Automatic,Non Certified,Zero Depreciation,2025-08-25,1313091,Yes
+83,Maruti,Ertiga,Ertiga ZXi,Red,Electric,UP93AB0083,2020-07-31,Active,2026-06-28,MA1yv3184310,ENGWz11061,2022,1,2,86050,1200,BS4,Automatic,Certified,Zero Depreciation,2026-03-05,1071899,Yes
+84,Mahindra,Thar,Thar VXi,Silver,Electric,GJ94AB0084,2017-07-25,Expired,2025-08-20,MA1ne0010397,ENGqw42404,2022,11,1,92761,2000,BS4,Manual,Certified,Comprehensive,2025-07-19,1097263,No
+85,Volkswagen,Polo,Polo VXi,Red,Electric,WB61AB0085,2024-04-21,Expired,2027-08-17,MA1ml3403048,ENGhd87094,2014,5,4,97355,1500,BS4,Automatic,Non Certified,Zero Depreciation,2025-12-05,883813,Yes
+86,Hyundai,i10,i10 ZXi,Grey,Diesel,UP58AB0086,2017-04-29,Expired,2027-10-05,MA1ce3919515,ENGNQ42367,2015,6,4,102767,1200,BS6,Automatic,Certified,Third Party,2025-10-22,936594,No
+87,Kia,Carens,Carens LXi,Red,Electric,DL89AB0087,2022-09-22,Expired,2028-03-23,MA1bJ1773461,ENGoY91115,2020,5,3,58998,1000,BS4,Manual,Certified,Comprehensive,2026-05-28,796105,Yes
+88,Skoda,Slavia,Slavia LXi,Grey,Electric,RJ21AB0088,2021-02-03,Expired,2025-10-09,MA1Ga8244512,ENGZv25734,2013,10,3,26707,2000,BS4,Automatic,Certified,Third Party,2025-11-22,610023,No
+89,Maruti,Swift,Swift SX,Blue,Electric,UP25AB0089,2021-07-07,Active,2026-07-30,MA1Xg1242316,ENGYY22581,2023,5,4,98271,800,BS4,Manual,Non Certified,Third Party,2025-11-18,240865,No
+90,Volkswagen,Taigun,Taigun VXi,Silver,Petrol,HR53AB0090,2020-11-23,Expired,2027-02-13,MA1uH9771140,ENGqv81582,2013,6,4,83832,800,BS4,Manual,Certified,Third Party,2025-10-06,1490143,No
+91,Maruti,Alto,Alto VXi,Silver,CNG,RJ46AB0091,2018-07-21,Expired,2026-01-14,MA1Mb2247664,ENGfJ86384,2016,3,1,29507,1000,BS4,Automatic,Non Certified,Third Party,2026-07-05,698916,Yes
+92,Toyota,Urban Cruiser,Urban Cruiser EX,Green,Diesel,KA17AB0092,2022-07-19,Expired,2026-06-11,MA1Dr2617087,ENGnD43505,2018,1,2,80405,800,BS4,Manual,Certified,Third Party,2025-07-20,766693,Yes
+93,Renault,Triber,Triber SX,Black,CNG,RJ71AB0093,2020-12-13,Active,2025-09-20,MA1Kx8966501,ENGdD52180,2023,11,2,24932,1500,BS4,Manual,Certified,Comprehensive,2025-10-30,867585,No
+94,Volkswagen,Polo,Polo LXi,Red,Diesel,RJ84AB0094,2021-12-03,Active,2026-05-30,MA1DA0691277,ENGvv75579,2019,12,3,25798,1000,BS4,Manual,Certified,Third Party,2025-08-26,878586,No
+95,Volkswagen,Virtus,Virtus LXi,Silver,Electric,TN87AB0095,2020-05-05,Active,2025-12-25,MA1zG1013146,ENGoN97882,2016,6,3,49067,1200,BS4,Automatic,Certified,Comprehensive,2025-08-03,830090,Yes
+96,Renault,Kwid,Kwid LXi,Grey,Petrol,DL17AB0096,2024-01-10,Active,2026-06-05,MA1dB5712983,ENGlf67092,2017,11,2,87656,1200,BS6,Automatic,Non Certified,Comprehensive,2025-12-17,737243,Yes
+97,Volkswagen,Polo,Polo VXi,Black,Electric,DL72AB0097,2021-02-01,Active,2026-04-18,MA1VS6457905,ENGPG75470,2021,7,4,69842,2000,BS6,Automatic,Certified,Third Party,2025-08-25,1232890,No
+98,Skoda,Kushaq,Kushaq EX,Green,CNG,MH15AB0098,2018-05-25,Expired,2027-02-14,MA1Rb9299625,ENGNK86835,2017,9,4,20109,1200,BS4,Manual,Certified,Comprehensive,2025-08-28,1010794,Yes
+99,Honda,Jazz,Jazz ZXi,White,CNG,UP61AB0099,2015-11-01,Active,2028-06-28,MA1Km7721937,ENGyY27721,2023,11,4,14036,1200,BS4,Automatic,Certified,Zero Depreciation,2025-11-16,1298510,No
+100,Kia,EV6,EV6 VXi,Green,CNG,RJ20AB0100,2024-04-04,Expired,2027-07-02,MA1Gg7051377,ENGeI33141,2022,2,1,121059,2000,BS4,Automatic,Certified,Comprehensive,2025-10-08,1284964,No
+101,Renault,Triber,Triber SX,White,CNG,KA52AB0101,2023-06-30,Expired,2025-08-12,MA1mQ5242178,ENGcb38138,2013,6,2,32121,2000,BS6,Automatic,Certified,Comprehensive,2026-01-25,844762,No
+102,Tata,Nexon,Nexon ZXi,Grey,Electric,KA16AB0102,2024-04-13,Active,2027-04-22,MA1xA1113035,ENGny31219,2013,7,4,90308,2000,BS4,Automatic,Certified,Zero Depreciation,2025-10-26,1148980,Yes
+103,Skoda,Octavia,Octavia VXi,White,Petrol,KA48AB0103,2019-02-17,Expired,2026-07-28,MA1Ml6834449,ENGCD47828,2015,5,1,15029,1200,BS4,Automatic,Certified,Third Party,2026-03-16,1211637,Yes
+104,Toyota,Urban Cruiser,Urban Cruiser LXi,Green,CNG,KA13AB0104,2024-06-08,Active,2026-04-19,MA1pt5196534,ENGGV68623,2017,5,4,26919,800,BS6,Automatic,Non Certified,Comprehensive,2025-08-17,497017,Yes
+105,Toyota,Innova,Innova EX,Red,Diesel,KA17AB0105,2019-02-22,Active,2027-01-08,MA1uo2317691,ENGhp48705,2013,9,3,69764,800,BS4,Automatic,Certified,Third Party,2025-08-27,1109750,No
+106,Honda,Jazz,Jazz SX,Red,Petrol,KA33AB0106,2021-03-20,Active,2026-11-08,MA1Fn8533590,ENGTc89252,2015,10,2,94579,800,BS6,Manual,Non Certified,Comprehensive,2025-09-25,820410,No
+107,Mahindra,XUV300,XUV300 LXi,White,Electric,KA38AB0107,2022-03-16,Active,2027-07-13,MA1BX4365281,ENGwo41224,2022,12,1,104427,1500,BS4,Automatic,Certified,Third Party,2025-12-25,672885,Yes
+108,Renault,Triber,Triber EX,Red,CNG,KA87AB0108,2019-10-06,Active,2028-01-10,MA1Ey4328308,ENGOL49105,2014,12,3,111373,1200,BS4,Manual,Certified,Third Party,2026-03-13,855076,No
+109,Tata,Tiago,Tiago VXi,Silver,CNG,KA79AB0109,2017-01-29,Active,2027-06-19,MA1BX1724634,ENGYB70512,2013,10,2,74466,800,BS6,Manual,Non Certified,Zero Depreciation,2026-06-26,1166742,Yes
+110,Renault,Kwid,Kwid VXi,Blue,Petrol,KA56AB0110,2021-06-29,Expired,2028-06-06,MA1Eh8652868,ENGBG31273,2018,4,2,118734,1000,BS6,Manual,Non Certified,Zero Depreciation,2026-02-06,1168265,No
+111,Maruti,Alto,Alto ZXi,Red,Electric,KA99AB0111,2019-06-05,Active,2025-11-21,MA1kZ1243836,ENGff82709,2014,10,3,102267,800,BS6,Manual,Certified,Zero Depreciation,2026-03-18,1143222,Yes
+112,Kia,Seltos,Seltos ZXi,Green,CNG,KA99AB0112,2016-08-12,Active,2027-09-22,MA1NP8503031,ENGlm27278,2017,2,3,9073,1200,BS6,Automatic,Certified,Third Party,2026-01-25,1032762,No
+113,Mahindra,XUV300,XUV300 SX,Blue,Petrol,KA43AB0113,2022-06-28,Expired,2026-07-21,MA1yp6934149,ENGcn03612,2017,1,3,72445,1500,BS6,Automatic,Certified,Third Party,2026-04-07,830101,Yes
+114,Mahindra,Thar,Thar EX,Silver,CNG,KA56AB0114,2019-11-14,Expired,2026-01-20,MA1Oy5072550,ENGCU65516,2023,6,4,101042,800,BS6,Automatic,Non Certified,Zero Depreciation,2025-08-02,461635,No
+115,Tata,Nexon,Nexon EX,Orange,CNG,KA61AB0115,2017-04-22,Expired,2027-06-15,MA1YF6038106,ENGuu34471,2016,11,3,17409,1000,BS6,Manual,Certified,Zero Depreciation,2025-11-24,447011,No
+116,Tata,Tiago,Tiago ZXi,Black,Electric,KA97AB0116,2021-05-10,Active,2028-06-14,MA1Yf0795712,ENGFu61684,2022,6,3,118581,2000,BS4,Automatic,Certified,Comprehensive,2025-07-11,607338,No
+117,Maruti,Alto,Alto VXi,Blue,CNG,KA37AB0117,2021-08-25,Active,2027-09-07,MA1OV4370048,ENGzm54414,2018,10,3,128626,1000,BS4,Automatic,Certified,Comprehensive,2025-09-11,458356,No
+118,Hyundai,i10,i10 SX,Grey,Diesel,KA14AB0118,2019-05-12,Active,2026-05-14,MA1Or4538486,ENGup55549,2016,10,1,89798,1200,BS4,Automatic,Non Certified,Third Party,2026-01-15,775198,Yes
+119,Renault,Kiger,Kiger LXi,Red,Petrol,KA24AB0119,2020-09-26,Active,2028-06-13,MA1EW7867503,ENGwD15760,2015,8,3,149261,1000,BS4,Automatic,Certified,Comprehensive,2026-01-30,554698,Yes
+120,Tata,Punch,Punch SX,Green,Petrol,KA64AB0120,2016-03-20,Active,2026-06-21,MA1oG5386030,ENGcc81460,2015,1,3,26708,2000,BS4,Manual,Non Certified,Comprehensive,2025-08-15,731388,No
+121,Toyota,Glanza,Glanza ZXi,Green,Diesel,KA56AB0121,2019-05-07,Expired,2027-03-31,MA1xt2073383,ENGTc77675,2018,11,4,29754,1000,BS6,Manual,Certified,Zero Depreciation,2025-07-19,296565,No
+122,Toyota,Glanza,Glanza SX,Silver,Electric,KA81AB0122,2019-11-01,Active,2026-10-16,MA1KH9786724,ENGGz91994,2014,8,2,5702,800,BS4,Manual,Certified,Third Party,2025-11-26,305997,Yes
+123,Hyundai,Venue,Venue EX,Grey,CNG,KA45AB0123,2017-08-05,Expired,2026-01-17,MA1Tf9241170,ENGIt24270,2015,1,4,83961,1000,BS4,Automatic,Certified,Zero Depreciation,2026-02-19,992324,Yes
+124,Hyundai,Venue,Venue ZXi,Silver,CNG,KA21AB0124,2021-12-31,Expired,2027-01-26,MA1AG0285736,ENGJz44348,2017,10,1,67208,2000,BS6,Automatic,Certified,Third Party,2026-03-01,1068497,Yes
+125,Hyundai,Creta,Creta EX,Red,Petrol,KA61AB0125,2023-01-07,Expired,2025-09-09,MA1Iz8350646,ENGPi15953,2023,11,2,88913,1000,BS6,Manual,Non Certified,Comprehensive,2026-03-12,629450,Yes
+126,Toyota,Fortuner,Fortuner VXi,Blue,Petrol,KA81AB0126,2019-06-17,Active,2028-04-16,MA1cG5192149,ENGzo54344,2016,11,2,75798,800,BS6,Automatic,Certified,Third Party,2026-04-24,623740,Yes
+127,Hyundai,i20,i20 SX,Blue,Diesel,KA80AB0127,2017-01-13,Expired,2026-09-14,MA1DV9272558,ENGJW23278,2017,3,4,131222,1500,BS4,Manual,Certified,Comprehensive,2025-10-31,1170489,Yes
+128,Volkswagen,Virtus,Virtus SX,Blue,Petrol,KA63AB0128,2020-11-19,Active,2026-05-21,MA1WK8068154,ENGNt66633,2013,5,4,56029,800,BS6,Manual,Certified,Third Party,2025-11-28,600363,No
+129,Honda,WR-V,WR-V LXi,Grey,Petrol,KA52AB0129,2023-05-24,Expired,2026-10-17,MA1BE1470894,ENGuT76430,2023,4,2,78764,1500,BS6,Automatic,Certified,Third Party,2026-05-20,1239471,Yes
+130,Honda,City,City VXi,Green,CNG,KA30AB0130,2022-08-27,Expired,2027-07-17,MA1FL3795805,ENGLB84683,2015,10,4,11429,2000,BS4,Manual,Certified,Comprehensive,2025-09-14,744311,Yes
+131,Mahindra,XUV300,XUV300 SX,White,Diesel,KA66AB0131,2024-05-01,Active,2025-09-26,MA1vJ0862297,ENGeV42860,2018,6,4,14358,2000,BS4,Automatic,Certified,Comprehensive,2026-01-01,710529,Yes
+132,Hyundai,Creta,Creta SX,Blue,Diesel,KA19AB0132,2016-05-30,Expired,2026-11-24,MA1Zx9670145,ENGPF74004,2021,7,2,105754,1500,BS4,Automatic,Certified,Comprehensive,2026-03-11,1108118,No
+133,Mahindra,XUV300,XUV300 VXi,Green,Diesel,KA80AB0133,2022-06-12,Expired,2028-06-02,MA1yB9343082,ENGZd42195,2015,12,1,64553,800,BS4,Automatic,Certified,Third Party,2026-04-11,653559,No
+134,Volkswagen,Polo,Polo VXi,Grey,Petrol,KA90AB0134,2020-02-18,Active,2026-04-25,MA1qx4360797,ENGpw74508,2018,11,1,32973,2000,BS6,Automatic,Certified,Zero Depreciation,2025-11-22,1040046,Yes
+135,Renault,Kiger,Kiger LXi,Black,CNG,KA25AB0135,2021-12-23,Active,2027-03-20,MA1Hk3884980,ENGlA15878,2023,6,4,51197,2000,BS4,Automatic,Certified,Zero Depreciation,2025-11-27,622480,No
+136,Volkswagen,Polo,Polo ZXi,Silver,Diesel,KA67AB0136,2017-04-15,Active,2028-05-18,MA1Sj9177062,ENGEH17549,2021,8,2,46222,2000,BS6,Automatic,Certified,Comprehensive,2026-05-19,1265991,Yes
+137,Maruti,Baleno,Baleno SX,White,Petrol,KA15AB0137,2018-08-06,Active,2028-03-15,MA1hF7037973,ENGMI46830,2018,3,3,112277,1000,BS6,Automatic,Certified,Zero Depreciation,2026-06-20,1183103,No
+138,Maruti,Alto,Alto EX,Silver,Petrol,KA94AB0138,2015-07-26,Active,2026-03-22,MA1RN4268268,ENGvN28265,2018,11,3,73139,1200,BS4,Automatic,Certified,Comprehensive,2025-10-29,679544,Yes
+139,Kia,Carens,Carens EX,Grey,CNG,KA55AB0139,2021-11-07,Active,2026-10-20,MA1Um8686251,ENGLO33015,2019,11,3,148278,2000,BS4,Automatic,Certified,Zero Depreciation,2025-12-10,389857,No
+140,Maruti,Swift,Swift SX,Green,CNG,KA34AB0140,2020-09-21,Active,2027-11-29,MA1WX8795465,ENGsi80064,2019,8,1,90109,1500,BS6,Manual,Certified,Comprehensive,2025-12-14,503860,Yes
+141,Mahindra,XUV700,XUV700 EX,Grey,Diesel,KA91AB0141,2019-08-29,Active,2025-09-01,MA1Hj1222839,ENGJM28846,2020,5,2,8839,1200,BS4,Manual,Certified,Comprehensive,2025-11-20,517136,No
+142,Volkswagen,Polo,Polo LXi,White,CNG,KA31AB0142,2015-11-23,Active,2026-01-10,MA1tG2062309,ENGjd02543,2023,1,1,116214,800,BS4,Manual,Certified,Comprehensive,2025-08-28,567744,Yes
+143,Maruti,Alto,Alto LXi,Green,Electric,KA44AB0143,2021-10-10,Active,2026-11-28,MA1Sd5339624,ENGkV24500,2016,7,4,100119,800,BS6,Automatic,Certified,Zero Depreciation,2025-08-29,274613,Yes
+144,Volkswagen,Virtus,Virtus LXi,Green,Petrol,KA61AB0144,2018-03-16,Active,2028-02-18,MA1rv2023602,ENGUo99483,2014,5,2,51736,1200,BS4,Automatic,Certified,Comprehensive,2026-06-28,1060821,Yes
+145,Tata,Harrier,Harrier EX,Blue,Electric,KA07AB0145,2016-06-23,Expired,2028-04-02,MA1tk8977556,ENGOo50581,2020,8,4,21228,1000,BS6,Manual,Certified,Comprehensive,2025-10-28,1209774,Yes
+146,Toyota,Glanza,Glanza VXi,White,Diesel,KA30AB0146,2016-10-22,Expired,2028-03-10,MA1zY4358467,ENGnX52325,2017,2,2,65939,2000,BS6,Manual,Certified,Zero Depreciation,2025-10-06,362341,No
+147,Honda,Amaze,Amaze LXi,Silver,CNG,KA89AB0147,2019-11-06,Active,2027-05-25,MA1kO9536881,ENGno38406,2021,7,2,89288,1000,BS4,Manual,Certified,Zero Depreciation,2025-07-20,630126,Yes
+148,Skoda,Kushaq,Kushaq VXi,Blue,CNG,KA87AB0148,2020-10-22,Expired,2027-01-12,MA1uI0486723,ENGtY57160,2017,7,1,128094,2000,BS6,Manual,Non Certified,Comprehensive,2025-09-09,502014,Yes
+149,Skoda,Slavia,Slavia EX,White,Diesel,KA71AB0149,2023-03-23,Expired,2026-03-20,MA1OR5890222,ENGyH88397,2014,8,2,33264,1200,BS4,Automatic,Certified,Third Party,2026-05-03,709145,No
+150,Tata,Tiago,Tiago ZXi,Silver,CNG,KA22AB0150,2017-03-20,Expired,2027-07-28,MA1Re4279444,ENGfN18269,2019,2,3,32070,800,BS4,Automatic,Certified,Third Party,2026-02-21,1439170,No
+151,Renault,Triber,Triber VXi,Green,CNG,KA94AB0151,2018-06-21,Expired,2026-04-14,MA1yX6339065,ENGMl49623,2018,6,2,109604,2000,BS4,Automatic,Certified,Comprehensive,2026-03-19,811409,Yes
+152,Volkswagen,Virtus,Virtus SX,Green,Electric,KA37AB0152,2017-04-20,Expired,2025-07-18,MA1uc9002175,ENGGR37745,2023,5,1,106799,1500,BS6,Manual,Certified,Zero Depreciation,2025-08-08,1338756,No
+153,Skoda,Slavia,Slavia ZXi,Red,Diesel,KA12AB0153,2023-12-18,Expired,2027-11-21,MA1wU5982372,ENGTx18219,2015,1,1,30452,1500,BS4,Manual,Certified,Third Party,2025-07-25,1141927,Yes
+154,Maruti,Baleno,Baleno EX,Blue,Petrol,KA17AB0154,2024-06-13,Expired,2028-06-19,MA1fP0199233,ENGnU41422,2014,10,4,20205,1500,BS6,Manual,Certified,Comprehensive,2025-11-04,1263895,Yes
+155,Renault,Triber,Triber LXi,Blue,Electric,KA43AB0155,2017-07-17,Active,2028-02-01,MA1me9451632,ENGKQ23054,2016,6,1,57014,1000,BS6,Automatic,Non Certified,Zero Depreciation,2025-08-24,877509,No
+156,Volkswagen,Polo,Polo VXi,Grey,Electric,KA62AB0156,2021-08-08,Expired,2027-02-13,MA1yv2122211,ENGcD59550,2013,1,1,98678,2000,BS6,Manual,Certified,Third Party,2025-07-27,438613,No
+157,Tata,Altroz,Altroz SX,Red,Diesel,KA57AB0157,2016-12-24,Expired,2026-08-30,MA1Bb9260697,ENGnP91328,2022,2,4,23512,2000,BS4,Manual,Certified,Comprehensive,2025-11-29,746081,Yes
+158,Maruti,Swift,Swift VXi,Blue,Electric,KA14AB0158,2022-07-13,Expired,2027-12-23,MA1KN4321212,ENGTS69677,2019,3,1,80570,800,BS6,Automatic,Certified,Zero Depreciation,2026-01-10,1183765,Yes
+159,Mahindra,Bolero,Bolero ZXi,Red,Diesel,KA60AB0159,2016-08-23,Expired,2027-05-13,MA1xO0925910,ENGnF79577,2017,5,3,33498,800,BS6,Automatic,Certified,Zero Depreciation,2026-02-18,1269118,No
+160,Volkswagen,Virtus,Virtus SX,Blue,Petrol,KA83AB0160,2024-05-03,Active,2025-09-21,MA1IB0871506,ENGRy30705,2015,11,1,78316,1000,BS4,Manual,Certified,Comprehensive,2025-11-17,1252978,Yes
+161,Volkswagen,Taigun,Taigun ZXi,White,Petrol,KA71AB0161,2017-03-29,Active,2026-06-29,MA1LO3564513,ENGRd98198,2019,8,1,89118,1200,BS4,Manual,Certified,Third Party,2026-01-15,1363594,Yes
+162,Volkswagen,Polo,Polo SX,Black,Electric,KA84AB0162,2019-02-02,Expired,2026-11-21,MA1Kf0777913,ENGvA67525,2014,5,3,147280,800,BS4,Manual,Certified,Third Party,2026-04-22,1164775,No
+163,Tata,Altroz,Altroz ZXi,Silver,Petrol,KA58AB0163,2017-03-08,Expired,2027-07-06,MA1Ub1239635,ENGvR23122,2019,12,4,89444,800,BS4,Manual,Certified,Third Party,2025-10-19,567747,Yes
+164,Honda,Amaze,Amaze SX,White,Diesel,KA83AB0164,2024-05-11,Active,2026-10-23,MA1OM6570414,ENGxR15285,2015,5,1,111581,1200,BS6,Manual,Certified,Comprehensive,2025-12-06,1441920,Yes
+165,Maruti,Baleno,Baleno LXi,Black,Electric,KA92AB0165,2020-05-20,Active,2026-09-17,MA1xR0111817,ENGYQ59781,2013,12,3,135348,1000,BS4,Automatic,Certified,Zero Depreciation,2025-10-14,1276019,No
+166,Skoda,Kushaq,Kushaq VXi,Grey,CNG,KA68AB0166,2020-12-08,Active,2026-11-11,MA1Ww2526547,ENGQV19743,2020,9,1,139787,1500,BS6,Manual,Certified,Comprehensive,2026-03-17,1206378,No
+167,Toyota,Fortuner,Fortuner VXi,Grey,CNG,KA83AB0167,2016-10-09,Expired,2027-06-06,MA1Ml3809031,ENGAm86966,2017,8,4,118959,1200,BS6,Manual,Certified,Comprehensive,2026-03-17,520881,Yes
+168,Hyundai,Venue,Venue LXi,Green,Petrol,KA56AB0168,2022-10-26,Active,2027-10-09,MA1yE3822226,ENGZF36078,2021,6,2,138229,1200,BS6,Manual,Certified,Comprehensive,2026-07-06,1454863,No
+169,Toyota,Urban Cruiser,Urban Cruiser EX,Grey,CNG,KA97AB0169,2016-11-28,Active,2026-09-22,MA1Fn7960011,ENGts24696,2018,7,4,45385,800,BS4,Manual,Certified,Third Party,2025-08-12,262974,Yes
+170,Tata,Altroz,Altroz LXi,Silver,CNG,KA20AB0170,2022-05-06,Expired,2026-10-14,MA1kv0873948,ENGcz33651,2017,9,1,34741,800,BS4,Manual,Certified,Comprehensive,2026-04-25,637818,Yes
+171,Skoda,Octavia,Octavia SX,Blue,Petrol,KA72AB0171,2023-12-02,Expired,2025-09-21,MA1PB3379578,ENGoB31733,2021,12,3,128174,1500,BS4,Manual,Certified,Third Party,2026-05-09,1395696,No
+172,Kia,Sonet,Sonet ZXi,Grey,Petrol,KA57AB0172,2021-03-25,Expired,2026-04-28,MA1oB9061224,ENGBR00073,2014,10,2,74730,1000,BS6,Manual,Certified,Comprehensive,2026-06-02,905958,Yes
+173,Honda,Amaze,Amaze EX,Silver,CNG,KA55AB0173,2015-08-20,Active,2026-06-02,MA1PM5209977,ENGox44502,2015,7,1,52758,800,BS4,Automatic,Certified,Third Party,2025-11-15,1336624,No
+174,Renault,Kiger,Kiger LXi,Red,Electric,KA80AB0174,2023-09-20,Expired,2026-04-01,MA1DF5557497,ENGcP68988,2017,10,3,70059,1000,BS4,Automatic,Certified,Zero Depreciation,2025-11-14,1152079,Yes
+175,Tata,Nexon,Nexon VXi,Green,Electric,KA61AB0175,2021-06-30,Active,2028-06-23,MA1dE0427490,ENGPJ45590,2022,6,3,10595,2000,BS6,Manual,Certified,Third Party,2025-08-04,845560,No
+176,Hyundai,i20,i20 ZXi,Black,CNG,KA89AB0176,2023-01-20,Expired,2028-02-20,MA1VN0195429,ENGSW58017,2022,10,3,112863,2000,BS4,Automatic,Certified,Third Party,2026-02-11,728029,Yes
+177,Kia,Seltos,Seltos VXi,Green,Electric,KA16AB0177,2018-03-07,Expired,2026-05-26,MA1BQ1867214,ENGnv97141,2020,2,4,8559,1500,BS4,Automatic,Certified,Comprehensive,2026-05-07,443327,Yes
+178,Kia,Sonet,Sonet ZXi,Green,CNG,KA49AB0178,2020-09-23,Expired,2025-11-28,MA1MC2067911,ENGUV51441,2019,7,1,80216,1200,BS4,Automatic,Certified,Third Party,2026-01-31,1042044,Yes
+179,Honda,WR-V,WR-V ZXi,White,Petrol,KA90AB0179,2022-06-09,Active,2027-02-12,MA1PT4647373,ENGfy25786,2022,1,2,24926,1000,BS4,Manual,Certified,Zero Depreciation,2026-01-03,907514,Yes
+180,Kia,Carens,Carens LXi,Silver,CNG,KA30AB0180,2017-08-21,Expired,2026-01-30,MA1eI4531957,ENGOy56275,2023,10,3,57175,1200,BS4,Manual,Certified,Third Party,2025-07-18,219721,No
+181,Volkswagen,Virtus,Virtus SX,Red,Electric,KA87AB0181,2017-02-25,Active,2027-02-21,MA1LJ1632690,ENGhN14595,2017,6,1,12223,1000,BS4,Manual,Certified,Third Party,2026-05-07,809564,Yes
+182,Renault,Kwid,Kwid EX,Black,CNG,KA34AB0182,2023-07-01,Expired,2025-12-04,MA1OJ6743681,ENGKf58482,2023,11,1,23034,1200,BS4,Automatic,Certified,Comprehensive,2025-09-14,1276965,No
+183,Mahindra,Bolero,Bolero ZXi,White,Petrol,KA65AB0183,2024-02-21,Expired,2025-10-05,MA1Sw8954162,ENGuu09984,2017,7,1,85831,800,BS4,Automatic,Certified,Comprehensive,2025-09-07,1113034,Yes
+184,Mahindra,Bolero,Bolero VXi,Red,Diesel,KA85AB0184,2017-08-15,Expired,2027-08-20,MA1WP9643848,ENGoH37294,2015,1,3,139010,800,BS4,Manual,Certified,Zero Depreciation,2026-02-03,1299993,Yes
+185,Renault,Kwid,Kwid EX,Grey,Petrol,KA05AB0185,2019-11-08,Expired,2026-08-26,MA1Rd6455003,ENGtE62069,2017,4,4,21709,1200,BS4,Manual,Certified,Third Party,2026-03-16,1055392,No
+186,Skoda,Slavia,Slavia EX,Black,Diesel,KA43AB0186,2021-11-10,Expired,2027-12-12,MA1lM1780308,ENGZN20016,2014,12,1,134974,1200,BS4,Automatic,Certified,Comprehensive,2026-07-03,224484,Yes
+187,Volkswagen,Virtus,Virtus LXi,Blue,CNG,KA29AB0187,2024-03-12,Active,2027-07-05,MA1Ed2894797,ENGDI06713,2018,7,3,31521,1500,BS4,Manual,Certified,Comprehensive,2025-08-28,318358,Yes
+188,Mahindra,Bolero,Bolero ZXi,Black,CNG,KA37AB0188,2018-04-27,Expired,2027-07-03,MA1HV0524521,ENGod82435,2015,3,2,30775,1200,BS4,Manual,Certified,Comprehensive,2026-05-24,1471716,No
+189,Kia,Seltos,Seltos SX,Blue,Electric,KA72AB0189,2022-12-27,Active,2028-05-09,MA1tR4897230,ENGOH66257,2016,8,2,83944,1500,BS4,Automatic,Certified,Zero Depreciation,2026-05-05,1175212,Yes
+190,Tata,Punch,Punch VXi,Green,Diesel,KA64AB0190,2017-09-05,Active,2028-04-27,MA1nP1212290,ENGBO89968,2023,6,4,43686,1500,BS4,Manual,Certified,Third Party,2026-03-08,472802,No
+191,Kia,EV6,EV6 EX,Red,CNG,KA62AB0191,2016-01-16,Expired,2027-03-27,MA1dQ0172067,ENGya70464,2022,8,2,39814,1200,BS4,Automatic,Certified,Zero Depreciation,2025-11-15,1046677,No
+192,Skoda,Octavia,Octavia ZXi,White,Diesel,KA46AB0192,2023-03-26,Expired,2028-04-20,MA1JG4639472,ENGyK40820,2015,5,1,144265,1500,BS4,Automatic,Certified,Zero Depreciation,2026-05-07,712465,No
+193,Volkswagen,Taigun,Taigun VXi,Red,CNG,KA82AB0193,2016-08-12,Expired,2027-09-12,MA1Ws2922177,ENGAz89244,2016,4,4,27773,1000,BS4,Automatic,Certified,Zero Depreciation,2025-12-02,626937,No
+194,Volkswagen,Virtus,Virtus SX,Black,Petrol,KA65AB0194,2021-04-15,Expired,2027-05-22,MA1li5565541,ENGNJ19505,2016,8,3,34102,1200,BS4,Manual,Certified,Zero Depreciation,2025-12-05,1328865,Yes
+195,Honda,City,City EX,Black,Electric,KA50AB0195,2020-06-29,Active,2026-03-23,MA1Iq8467366,ENGzH18337,2023,5,2,135756,1500,BS6,Automatic,Certified,Third Party,2025-09-18,940767,Yes
+196,Volkswagen,Virtus,Virtus ZXi,Red,Petrol,KA13AB0196,2020-09-29,Expired,2026-09-24,MA1dx6212041,ENGcZ93606,2021,11,3,99334,2000,BS4,Manual,Certified,Zero Depreciation,2025-12-12,554403,No
+197,Mahindra,Thar,Thar VXi,Green,CNG,KA71AB0197,2018-09-23,Expired,2027-07-30,MA1pe5312550,ENGqD71535,2021,12,4,117299,800,BS6,Manual,Certified,Comprehensive,2025-09-10,230448,Yes
+198,Kia,Seltos,Seltos LXi,Black,Petrol,KA93AB0198,2024-03-04,Expired,2026-04-15,MA1ph3873998,ENGGg77235,2023,9,4,127067,800,BS6,Manual,Non Certified,Third Party,2025-12-06,880642,Yes
+199,Honda,City,City EX,Green,CNG,KA79AB0199,2023-06-13,Expired,2025-11-21,MA1mA6047602,ENGNa90199,2018,4,1,59637,1000,BS6,Manual,Certified,Zero Depreciation,2026-03-24,237176,Yes
+200,Tata,Harrier,Harrier ZXi,White,Electric,KA36AB0200,2017-01-17,Expired,2028-05-11,MA1aD7966050,ENGMT78804,2015,9,3,6154,1200,BS4,Automatic,Certified,Zero Depreciation,2025-10-11,305231,Yes
+201,Volkswagen,Virtus,Virtus VXi,White,Diesel,KA29AB0201,2021-09-27,Expired,2026-12-25,MA1dF2473222,ENGlB95626,2021,7,4,110528,2000,BS4,Manual,Certified,Comprehensive,2025-09-18,831782,Yes
+202,Maruti,Baleno,Baleno ZXi,Black,Electric,KA99AB0202,2016-01-20,Expired,2026-09-14,MA1Ye6093006,ENGBN09766,2021,8,1,147544,1500,BS4,Manual,Certified,Comprehensive,2025-07-30,1038802,Yes
+203,Mahindra,Scorpio,Scorpio VXi,Grey,Petrol,KA21AB0203,2021-09-01,Active,2026-12-01,MA1Vq2583587,ENGxH22947,2014,5,4,90275,800,BS6,Manual,Certified,Comprehensive,2026-04-28,904223,No
+204,Kia,Sonet,Sonet LXi,Silver,Petrol,KA44AB0204,2015-07-16,Active,2027-10-20,MA1cL5266565,ENGHe55375,2023,1,1,76059,1500,BS6,Automatic,Certified,Comprehensive,2025-11-21,1464293,No
+205,Renault,Kwid,Kwid SX,White,CNG,KA91AB0205,2022-06-29,Active,2026-04-06,MA1NG9421357,ENGpR72651,2017,5,1,94355,1200,BS6,Automatic,Certified,Zero Depreciation,2026-04-21,1465561,No
+206,Hyundai,Verna,Verna SX,Grey,Electric,KA12AB0206,2022-06-16,Active,2026-04-25,MA1YI2945112,ENGUC33463,2021,6,2,50870,800,BS6,Automatic,Certified,Comprehensive,2025-11-26,931753,Yes
+207,Volkswagen,Polo,Polo SX,Blue,Diesel,KA78AB0207,2022-09-07,Active,2025-11-29,MA1mi7703769,ENGOu44383,2018,12,2,25652,2000,BS6,Automatic,Certified,Zero Depreciation,2026-04-15,1138516,No
+208,Honda,Jazz,Jazz ZXi,Black,Diesel,KA04AB0208,2023-04-13,Active,2025-12-31,MA1zK2932470,ENGwE00892,2023,12,1,33561,2000,BS6,Automatic,Certified,Zero Depreciation,2026-02-11,425321,No
+209,Tata,Altroz,Altroz LXi,Grey,Electric,KA83AB0209,2020-11-30,Expired,2026-06-09,MA1ge0912467,ENGaS23260,2022,2,3,96828,1500,BS6,Manual,Certified,Zero Depreciation,2025-09-26,1052490,Yes
+210,Kia,Carens,Carens VXi,Grey,Diesel,KA21AB0210,2019-08-22,Expired,2027-05-07,MA1VK2727319,ENGkd27820,2020,6,4,111205,1200,BS4,Manual,Certified,Zero Depreciation,2025-07-10,1334095,Yes
+211,Toyota,Glanza,Glanza EX,White,CNG,KA09AB0211,2023-03-25,Active,2026-05-08,MA1AD7256802,ENGDs22832,2023,4,1,23710,1000,BS6,Manual,Certified,Comprehensive,2026-06-11,994660,No
+212,Renault,Kwid,Kwid SX,Black,Electric,KA72AB0212,2022-06-19,Active,2026-10-24,MA1mh3816023,ENGKv42868,2018,10,3,27203,1200,BS4,Automatic,Non Certified,Comprehensive,2025-11-11,646634,No
+213,Kia,Sonet,Sonet EX,White,CNG,KA16AB0213,2017-09-01,Active,2027-01-29,MA1sr8309359,ENGXQ85502,2014,11,2,126479,1000,BS6,Automatic,Certified,Comprehensive,2025-07-24,600911,Yes
+214,Volkswagen,Polo,Polo EX,Red,Electric,KA29AB0214,2019-01-22,Expired,2026-04-06,MA1Zv2781953,ENGmd88146,2014,7,4,67159,1200,BS6,Manual,Certified,Comprehensive,2026-02-12,254783,Yes
+215,Volkswagen,Taigun,Taigun SX,Silver,Diesel,KA03AB0215,2017-04-12,Expired,2027-11-29,MA1us8674972,ENGVo05132,2015,5,4,97754,2000,BS4,Automatic,Certified,Comprehensive,2026-06-29,1358613,No
+216,Renault,Triber,Triber SX,White,CNG,KA79AB0216,2017-02-27,Active,2025-12-25,MA1MP2312278,ENGxm40202,2015,6,4,36248,800,BS6,Automatic,Certified,Third Party,2026-05-03,833202,No
+217,Toyota,Innova,Innova EX,Grey,Petrol,KA09AB0217,2019-02-01,Active,2027-10-13,MA1uP7683479,ENGqY63833,2023,11,4,136129,1000,BS4,Manual,Certified,Third Party,2025-11-20,1291715,Yes
+218,Volkswagen,Taigun,Taigun ZXi,White,Petrol,KA13AB0218,2023-10-24,Active,2027-03-17,MA1sk0629506,ENGEn51430,2021,10,2,11304,2000,BS4,Automatic,Non Certified,Zero Depreciation,2026-05-11,535245,Yes
+219,Honda,Amaze,Amaze LXi,Red,CNG,KA79AB0219,2022-09-03,Active,2028-06-08,MA1ON9134542,ENGih92747,2022,5,3,141066,800,BS4,Automatic,Certified,Zero Depreciation,2025-11-13,1244333,No
+220,Toyota,Fortuner,Fortuner LXi,Black,Diesel,KA24AB0220,2021-04-07,Active,2027-01-29,MA1sQ3991501,ENGLw44011,2022,3,1,147270,2000,BS6,Automatic,Certified,Zero Depreciation,2026-05-28,840869,Yes
+221,Skoda,Kushaq,Kushaq VXi,Black,Diesel,KA74AB0221,2021-11-23,Active,2028-02-24,MA1Kn3874264,ENGAV42449,2017,7,3,32202,1200,BS6,Manual,Certified,Comprehensive,2025-10-16,428394,No
+222,Maruti,Swift,Swift SX,Black,Electric,KA11AB0222,2017-04-07,Expired,2027-03-12,MA1db3768590,ENGtM34523,2020,8,2,147303,1200,BS4,Manual,Certified,Comprehensive,2026-03-26,804742,No
+223,Toyota,Innova,Innova SX,White,CNG,KA75AB0223,2020-02-24,Expired,2026-06-19,MA1mM6758060,ENGIk66603,2019,10,2,52891,2000,BS4,Manual,Certified,Third Party,2026-03-12,804624,No
+224,Toyota,Fortuner,Fortuner ZXi,Red,Petrol,KA38AB0224,2018-04-22,Expired,2027-03-07,MA1Iw9626577,ENGgI71116,2021,9,3,30864,1500,BS6,Manual,Certified,Comprehensive,2025-11-12,1374175,Yes
+225,Renault,Triber,Triber SX,Blue,Electric,KA80AB0225,2021-02-26,Expired,2027-06-21,MA1SX8113648,ENGlX80015,2014,3,4,100433,800,BS4,Automatic,Certified,Comprehensive,2025-10-19,750772,Yes
+226,Tata,Nexon,Nexon LXi,Red,CNG,KA47AB0226,2021-09-25,Expired,2027-02-09,MA1zp3739502,ENGhr20243,2020,5,2,120110,1500,BS6,Automatic,Certified,Zero Depreciation,2026-04-22,639873,Yes
+227,Skoda,Octavia,Octavia EX,Red,Electric,KA36AB0227,2022-02-20,Active,2025-12-03,MA1ti1453613,ENGzt74632,2021,3,4,110106,1200,BS6,Manual,Certified,Comprehensive,2026-06-27,1358152,No
+228,Kia,EV6,EV6 ZXi,Red,Diesel,KA10AB0228,2023-12-11,Active,2027-01-01,MA1Yr8740904,ENGbV64225,2021,8,4,117127,1500,BS4,Manual,Non Certified,Comprehensive,2026-04-18,452661,Yes
+229,Toyota,Innova,Innova SX,Green,Petrol,KA55AB0229,2018-08-03,Expired,2028-03-19,MA1wU7504521,ENGai51045,2020,12,4,54567,1500,BS4,Manual,Certified,Zero Depreciation,2026-05-04,603532,Yes
+230,Tata,Tiago,Tiago ZXi,Silver,CNG,KA36AB0230,2020-10-01,Active,2028-04-29,MA1Hs5147932,ENGSC44639,2016,11,4,66269,2000,BS6,Automatic,Certified,Zero Depreciation,2026-02-09,533020,Yes
+231,Maruti,Ertiga,Ertiga EX,Silver,Electric,KA99AB0231,2019-09-14,Expired,2028-02-02,MA1kS3874507,ENGcR48788,2023,3,1,16220,1000,BS6,Automatic,Non Certified,Comprehensive,2026-06-20,949636,No
+232,Tata,Nexon,Nexon ZXi,Red,Diesel,KA74AB0232,2022-02-15,Expired,2027-12-13,MA1lt5262426,ENGYR77493,2016,5,4,51229,800,BS4,Manual,Certified,Comprehensive,2025-09-30,928529,Yes
+233,Renault,Kiger,Kiger SX,White,CNG,KA43AB0233,2017-05-24,Active,2027-10-02,MA1YT7938019,ENGFv99353,2023,9,3,135261,2000,BS6,Manual,Certified,Third Party,2025-10-05,942644,Yes
+234,Tata,Altroz,Altroz LXi,Black,CNG,KA18AB0234,2016-09-09,Expired,2026-02-14,MA1LB6481179,ENGAB10585,2021,11,2,104244,1500,BS4,Automatic,Certified,Comprehensive,2026-03-22,629028,No
+235,Volkswagen,Virtus,Virtus EX,Black,CNG,KA10AB0235,2016-03-05,Expired,2028-02-02,MA1dl6065187,ENGrV50667,2020,6,4,56425,1000,BS4,Manual,Certified,Comprehensive,2025-11-28,1437412,No
+236,Tata,Altroz,Altroz SX,Green,Electric,KA74AB0236,2020-06-18,Active,2026-08-18,MA1cx9102932,ENGfU37332,2015,1,3,136593,1500,BS6,Automatic,Certified,Zero Depreciation,2025-07-29,619711,No
+237,Kia,Carens,Carens ZXi,Silver,Petrol,KA16AB0237,2016-01-17,Active,2026-07-22,MA1mC7926271,ENGBo77771,2017,7,1,43582,800,BS6,Automatic,Certified,Zero Depreciation,2025-11-15,722493,No
+238,Renault,Triber,Triber LXi,Grey,Electric,KA16AB0238,2016-01-10,Active,2027-04-18,MA1Wb0248861,ENGei68745,2018,6,3,47499,1200,BS4,Automatic,Non Certified,Comprehensive,2026-01-28,663862,No
+239,Honda,Amaze,Amaze ZXi,White,Diesel,KA71AB0239,2017-05-29,Expired,2026-05-03,MA1om4168682,ENGHB03032,2017,9,2,14794,800,BS6,Automatic,Certified,Comprehensive,2026-05-22,1080291,No
+240,Volkswagen,Polo,Polo ZXi,Silver,Petrol,KA71AB0240,2016-01-27,Expired,2026-01-13,MA1vt7061514,ENGPx33116,2019,11,4,55493,1200,BS4,Automatic,Certified,Zero Depreciation,2026-05-04,1471830,Yes
+241,Toyota,Urban Cruiser,Urban Cruiser EX,White,Electric,KA15AB0241,2023-03-07,Expired,2027-04-07,MA1Ip9333556,ENGrA07766,2023,12,4,71046,1500,BS4,Automatic,Non Certified,Zero Depreciation,2026-01-29,1166100,No
+242,Volkswagen,Virtus,Virtus VXi,Red,CNG,KA98AB0242,2016-12-26,Expired,2025-10-04,MA1Sj2512587,ENGSS72450,2021,12,2,139904,1000,BS4,Automatic,Certified,Zero Depreciation,2026-02-22,877186,Yes
+243,Honda,WR-V,WR-V SX,Blue,Petrol,KA91AB0243,2024-03-28,Active,2027-07-28,MA1iP8456533,ENGgi31385,2016,7,3,118469,1000,BS6,Manual,Certified,Zero Depreciation,2026-06-14,253033,Yes
+244,Tata,Punch,Punch EX,Grey,Diesel,KA66AB0244,2015-08-09,Active,2026-05-28,MA1hJ8935687,ENGxB50365,2023,4,2,98012,1500,BS6,Manual,Non Certified,Zero Depreciation,2026-05-04,914331,No
+245,Kia,Sonet,Sonet EX,Red,CNG,KA16AB0245,2021-02-24,Expired,2028-04-12,MA1Lo7640560,ENGPz12072,2022,9,4,43629,1500,BS6,Automatic,Certified,Third Party,2026-04-04,272666,Yes
+246,Maruti,Baleno,Baleno ZXi,Grey,Diesel,KA44AB0246,2018-09-29,Active,2026-10-06,MA1oG4157823,ENGDX70217,2016,4,1,38438,1200,BS6,Manual,Certified,Comprehensive,2026-01-07,983831,No
+247,Kia,Seltos,Seltos VXi,Blue,Diesel,KA10AB0247,2024-03-24,Active,2027-03-04,MA1Eg1292056,ENGNI13285,2014,3,4,11109,2000,BS4,Manual,Non Certified,Zero Depreciation,2025-10-16,936334,Yes
+248,Hyundai,i20,i20 SX,Grey,CNG,KA35AB0248,2024-01-07,Active,2026-09-25,MA1xo5040161,ENGWX97156,2019,12,1,96494,2000,BS4,Manual,Certified,Zero Depreciation,2025-08-04,1034182,No
+249,Kia,Seltos,Seltos SX,Grey,CNG,KA20AB0249,2018-03-01,Expired,2027-11-18,MA1sG0250516,ENGQx47787,2019,8,4,108231,800,BS6,Manual,Certified,Third Party,2025-10-09,620181,No
+250,Toyota,Urban Cruiser,Urban Cruiser LXi,Black,Diesel,KA73AB0250,2016-12-20,Active,2027-01-11,MA1Zu9504263,ENGrw40393,2019,6,1,6625,1500,BS4,Automatic,Non Certified,Zero Depreciation,2026-06-16,224927,Yes
+251,Maruti,Dzire,Dzire ZXi,Green,Petrol,KA59AB0251,2023-06-09,Active,2026-10-12,MA1VQ7394232,ENGPV71464,2020,6,1,142218,1200,BS4,Automatic,Certified,Zero Depreciation,2025-08-01,813869,No
+252,Maruti,Alto,Alto SX,White,CNG,KA23AB0252,2020-07-03,Active,2027-06-03,MA1FY9400335,ENGmh58107,2013,6,1,80700,1200,BS4,Manual,Non Certified,Comprehensive,2026-02-19,1316977,Yes
+253,Tata,Altroz,Altroz EX,Red,Diesel,KA73AB0253,2021-04-23,Active,2028-03-05,MA1To2770889,ENGvB84043,2023,9,2,74376,1000,BS6,Manual,Certified,Comprehensive,2025-11-07,968105,No
+254,Kia,Sonet,Sonet VXi,Green,CNG,KA44AB0254,2019-10-10,Expired,2026-04-14,MA1ft7443493,ENGOU79018,2018,3,3,45092,1500,BS4,Automatic,Certified,Comprehensive,2025-07-12,306769,No
+255,Tata,Punch,Punch LXi,Red,Diesel,KA48AB0255,2016-09-28,Active,2026-01-26,MA1Vj5809595,ENGoZ47760,2018,4,1,87373,800,BS6,Automatic,Certified,Zero Depreciation,2025-12-14,384157,No
+256,Toyota,Fortuner,Fortuner VXi,Blue,Petrol,KA02AB0256,2024-06-21,Expired,2027-11-22,MA1hb0347934,ENGCm56316,2019,1,4,44795,1000,BS6,Manual,Non Certified,Third Party,2025-07-18,1395428,No
+257,Maruti,Dzire,Dzire LXi,Blue,Electric,KA81AB0257,2021-12-21,Active,2026-12-02,MA1TK0090990,ENGSE26563,2015,2,3,64425,2000,BS4,Manual,Certified,Comprehensive,2026-05-03,499079,No
+258,Tata,Altroz,Altroz LXi,Red,Diesel,KA78AB0258,2021-10-11,Active,2026-05-25,MA1UT8421232,ENGGn17972,2019,12,2,57348,800,BS4,Automatic,Certified,Comprehensive,2026-03-17,604384,Yes
+259,Hyundai,Venue,Venue EX,Black,CNG,KA61AB0259,2019-02-05,Active,2025-12-10,MA1HN3707331,ENGfc74846,2015,12,2,89168,1000,BS6,Automatic,Non Certified,Third Party,2025-09-18,535133,No
+260,Maruti,Swift,Swift LXi,Green,Petrol,KA20AB0260,2020-04-10,Expired,2027-12-28,MA1gt2712966,ENGLV44335,2014,10,4,103881,2000,BS6,Manual,Certified,Comprehensive,2026-03-29,1349998,No
+261,Honda,WR-V,WR-V LXi,Blue,CNG,KA90AB0261,2020-02-18,Active,2028-04-27,MA1hz9635904,ENGgX59114,2013,2,2,42011,1200,BS4,Automatic,Certified,Comprehensive,2025-10-28,842443,No
+262,Mahindra,XUV700,XUV700 ZXi,Black,Diesel,KA85AB0262,2021-06-04,Active,2026-02-03,MA1dP2476924,ENGNC86760,2016,10,1,15471,800,BS4,Automatic,Certified,Zero Depreciation,2026-03-18,1116919,No
+263,Renault,Triber,Triber EX,Grey,Electric,KA53AB0263,2019-03-04,Expired,2026-07-20,MA1ot7196658,ENGXe60211,2018,10,2,25071,1000,BS4,Automatic,Non Certified,Comprehensive,2025-09-26,584831,No
+264,Renault,Triber,Triber VXi,Green,Petrol,KA52AB0264,2023-11-07,Active,2026-08-04,MA1et7680749,ENGku20889,2013,1,4,125935,800,BS6,Automatic,Certified,Third Party,2025-12-28,1436936,Yes
+265,Kia,Seltos,Seltos EX,White,Petrol,KA57AB0265,2016-09-20,Expired,2025-08-26,MA1WI5003505,ENGHX85068,2023,1,1,133827,1500,BS6,Manual,Certified,Zero Depreciation,2025-09-08,625185,No
+266,Hyundai,i20,i20 VXi,Grey,Electric,KA77AB0266,2018-08-13,Active,2028-07-01,MA1Nf1441211,ENGCY17400,2022,2,3,145170,1200,BS4,Manual,Certified,Comprehensive,2026-04-03,1367677,Yes
+267,Skoda,Kushaq,Kushaq SX,White,Diesel,KA03AB0267,2015-07-24,Expired,2028-07-01,MA1jO4833342,ENGcj71151,2019,11,4,99200,1000,BS6,Manual,Certified,Zero Depreciation,2025-12-29,411575,Yes
+268,Toyota,Urban Cruiser,Urban Cruiser VXi,Red,CNG,KA63AB0268,2024-05-29,Active,2028-03-12,MA1UT3149930,ENGWy68021,2014,9,3,26514,1000,BS4,Manual,Certified,Third Party,2025-10-07,986593,No
+269,Volkswagen,Virtus,Virtus VXi,Blue,Petrol,KA82AB0269,2022-05-15,Active,2028-06-21,MA1nl3679813,ENGDb14936,2019,2,2,13948,800,BS6,Manual,Certified,Zero Depreciation,2026-06-29,1424620,Yes
+270,Mahindra,Thar,Thar ZXi,Blue,Petrol,KA07AB0270,2021-06-25,Active,2027-06-14,MA1Fi8188500,ENGOF63980,2021,7,3,53669,1200,BS4,Automatic,Certified,Zero Depreciation,2026-04-30,1305736,No
+271,Maruti,Dzire,Dzire LXi,Blue,CNG,KA57AB0271,2018-08-14,Expired,2028-03-06,MA1rK4776806,ENGBR60989,2019,11,1,106240,2000,BS4,Automatic,Certified,Zero Depreciation,2026-02-21,705502,No
+272,Kia,EV6,EV6 VXi,Red,Electric,KA90AB0272,2023-05-01,Active,2026-07-21,MA1NV3808333,ENGgC91982,2023,6,4,9670,1500,BS4,Automatic,Certified,Third Party,2026-06-30,657081,No
+273,Mahindra,Bolero,Bolero ZXi,Green,Diesel,KA37AB0273,2023-10-26,Expired,2028-05-27,MA1vF1708271,ENGpA65669,2019,11,1,140200,1200,BS4,Manual,Certified,Zero Depreciation,2025-10-20,685710,No
+274,Maruti,Dzire,Dzire VXi,Silver,Diesel,KA99AB0274,2019-04-18,Active,2025-07-26,MA1RQ4135712,ENGlt16541,2015,9,3,46729,1200,BS6,Manual,Certified,Comprehensive,2025-08-25,1123630,No
+275,Maruti,Baleno,Baleno LXi,White,Diesel,KA82AB0275,2019-04-04,Expired,2026-06-06,MA1NS8543081,ENGvl14545,2022,7,2,95819,2000,BS4,Automatic,Certified,Third Party,2025-09-04,1146065,No
+276,Mahindra,Thar,Thar LXi,Silver,Diesel,KA48AB0276,2022-02-25,Active,2025-12-07,MA1KZ4521626,ENGix97461,2022,9,2,99309,1200,BS6,Manual,Certified,Zero Depreciation,2026-02-17,404662,No
+277,Toyota,Etios,Etios G,White,Diesel,KA11AB0277,2020-01-22,Expired,2028-01-09,MA1iA9266204,ENGhj58338,2020,10,4,129662,800,BS6,Manual,Certified,Third Party,2025-10-13,1028197,Yes
+278,Volkswagen,Taigun,Taigun ZXi,Silver,Petrol,KA56AB0278,2016-11-02,Expired,2027-01-08,MA1zu5301480,ENGyh95924,2022,6,1,124502,800,BS6,Manual,Certified,Comprehensive,2025-08-26,802771,Yes
+279,Renault,Kwid,Kwid SX,Black,Electric,KA09AB0279,2022-02-23,Expired,2028-06-12,MA1ZE9378716,ENGzc14887,2018,12,1,85111,1500,BS6,Manual,Certified,Comprehensive,2026-03-01,371936,Yes
+280,Toyota,Glanza,Glanza VXi,Black,CNG,KA11AB0280,2017-10-26,Active,2028-02-17,MA1IL0690252,ENGQS54415,2021,1,4,37086,1500,BS4,Automatic,Certified,Third Party,2025-11-18,480053,No
+281,Maruti,Dzire,Dzire SX,Red,Diesel,KA03AB0281,2017-04-05,Active,2026-05-19,MA1KI5981847,ENGdL24864,2013,7,2,90807,2000,BS6,Automatic,Certified,Zero Depreciation,2026-05-21,511872,Yes
+282,Tata,Tiago,Tiago VXi,Green,Electric,KA30AB0282,2017-04-16,Expired,2028-06-04,MA1sD6425428,ENGjp97871,2021,2,4,75458,800,BS4,Automatic,Certified,Comprehensive,2026-04-13,1018647,No
+283,Tata,Nexon,Nexon VXi,Black,Petrol,KA97AB0283,2017-02-03,Active,2027-03-14,MA1Ob8320872,ENGBE92311,2022,12,1,14087,2000,BS6,Automatic,Certified,Third Party,2025-07-28,958557,No
+284,Skoda,Octavia,Octavia VXi,Grey,Petrol,KA40AB0284,2016-03-23,Active,2026-02-02,MA1Fg6676314,ENGfn87893,2013,3,1,82794,2000,BS4,Automatic,Certified,Zero Depreciation,2026-01-13,683024,No
+285,Volkswagen,Polo,Polo LXi,Black,Petrol,KA43AB0285,2022-08-14,Active,2028-05-26,MA1Hv9748099,ENGBh15161,2014,5,4,89069,1500,BS4,Automatic,Certified,Zero Depreciation,2025-11-01,369434,No
+286,Kia,EV6,EV6 LXi,Blue,CNG,KA91AB0286,2019-02-14,Expired,2026-10-20,MA1qw9175511,ENGDI01588,2016,1,2,48528,2000,BS4,Automatic,Certified,Third Party,2025-07-12,339929,No
+287,Hyundai,Verna,Verna VXi,White,Petrol,KA53AB0287,2019-01-24,Expired,2027-06-28,MA1Cc5842928,ENGRl17120,2022,5,2,104662,1000,BS6,Manual,Certified,Comprehensive,2026-04-19,203218,No
+288,Toyota,Innova,Innova LXi,Grey,Diesel,KA66AB0288,2015-08-23,Active,2027-11-20,MA1YX3675447,ENGWy13217,2016,9,4,78345,1500,BS4,Manual,Non Certified,Zero Depreciation,2025-10-02,1301040,Yes
+289,Renault,Triber,Triber VXi,Silver,Diesel,KA02AB0289,2019-07-12,Expired,2028-03-09,MA1xu9368614,ENGpo82218,2020,5,4,20866,2000,BS6,Automatic,Certified,Zero Depreciation,2025-10-19,1211140,No
+290,Kia,Seltos,Seltos LXi,Red,Diesel,KA10AB0290,2018-07-11,Active,2026-08-23,MA1yR4391820,ENGlQ34566,2014,6,4,11037,1000,BS6,Manual,Certified,Third Party,2026-03-11,395027,Yes
+291,Renault,Triber,Triber EX,Silver,Electric,KA47AB0291,2017-10-03,Active,2026-07-29,MA1Wu3951648,ENGTO30992,2021,8,2,6887,1500,BS4,Manual,Non Certified,Zero Depreciation,2026-06-27,1202782,Yes
+292,Skoda,Kushaq,Kushaq EX,White,Petrol,KA98AB0292,2022-07-16,Expired,2027-04-16,MA1hc3127694,ENGBl05524,2015,3,4,16298,1500,BS4,Manual,Certified,Zero Depreciation,2026-01-02,1368985,Yes
+293,Volkswagen,Polo,Polo EX,Black,Diesel,KA75AB0293,2022-10-18,Expired,2027-12-01,MA1dI2838662,ENGPL15818,2016,2,2,5907,1200,BS6,Automatic,Certified,Third Party,2025-10-04,736533,No
+294,Toyota,Glanza,Glanza EX,Blue,CNG,KA98AB0294,2022-03-06,Expired,2027-10-13,MA1sc8166771,ENGyM61905,2015,7,4,55882,1200,BS6,Automatic,Non Certified,Third Party,2026-02-26,1438953,Yes
+295,Toyota,Urban Cruiser,Urban Cruiser ZXi,Grey,Electric,KA23AB0295,2020-12-10,Active,2027-02-11,MA1xY6571936,ENGlP16348,2023,8,3,114106,2000,BS4,Automatic,Non Certified,Zero Depreciation,2026-04-15,966991,Yes
+296,Toyota,Glanza,Glanza SX,Black,CNG,KA23AB0296,2021-12-31,Expired,2027-05-27,MA1On0355899,ENGtl37445,2016,3,4,133063,800,BS6,Automatic,Certified,Zero Depreciation,2025-08-30,1089781,Yes
+297,Maruti,Ertiga,Ertiga SX,Black,Electric,KA85AB0297,2015-12-04,Active,2027-07-16,MA1HW7696407,ENGrL88503,2022,7,2,87924,1200,BS4,Manual,Certified,Zero Depreciation,2026-03-31,569548,No
+298,Kia,Sonet,Sonet VXi,Red,Diesel,KA08AB0298,2016-05-01,Active,2027-11-08,MA1ip7928951,ENGvv59394,2020,7,1,113824,1000,BS6,Manual,Certified,Third Party,2025-08-31,473264,No
+299,Skoda,Slavia,Slavia SX,Green,Electric,KA76AB0299,2022-04-14,Expired,2028-03-29,MA1UH7748126,ENGpx22089,2019,12,4,79524,1000,BS6,Automatic,Non Certified,Comprehensive,2025-07-29,1037689,No
+300,Mahindra,Bolero,Bolero VXi,Red,Diesel,KA71AB0300,2020-09-18,Expired,2026-12-13,MA1Wy2377638,ENGAW33854,2023,2,3,95502,800,BS6,Manual,Certified,Zero Depreciation,2025-11-17,1435466,No
+301,Volkswagen,Polo,Polo SX,Green,Electric,KA79AB0301,2015-12-01,Active,2027-07-22,MA1VH6725940,ENGQS56237,2022,10,4,104885,2000,BS4,Manual,Non certified,Zero Depreciation,2026-03-12,1324127,No
+302,Maruti,Baleno,Baleno VXi,Blue,Petrol,KA24AB0302,2016-01-09,Expired,2026-03-08,MA1Hi6891507,ENGxA04835,2015,12,4,55535,1200,BS6,Manual,Certified,Zero Depreciation,2025-08-19,918453,Yes
+303,Tata,Altroz,Altroz SX,White,Diesel,KA75AB0303,2019-01-09,Expired,2026-12-31,MA1mC1130452,ENGyB97517,2021,4,4,96483,1500,BS6,Manual,Certified,Third Party,2026-06-16,726038,No
+304,Hyundai,Venue,Venue VXi,Black,Petrol,KA82AB0304,2020-10-16,Expired,2027-10-05,MA1Uf9792306,ENGCc80504,2018,10,3,24826,800,BS6,Automatic,Certified,Comprehensive,2026-06-25,413522,No
+305,Toyota,Innova,Innova ZXi,Silver,Electric,KA94AB0305,2022-02-22,Expired,2027-12-13,MA1pa9506626,ENGoU36395,2013,9,4,114427,1000,BS4,Manual,Non certified,Third Party,2025-12-20,248305,Yes
+306,Skoda,Octavia,Octavia EX,Green,Diesel,KA83AB0306,2019-01-17,Active,2028-05-13,MA1wR9321370,ENGSf66297,2019,2,2,148905,800,BS6,Manual,Certified,Third Party,2026-05-13,356990,No
+307,Skoda,Kushaq,Kushaq VXi,Blue,CNG,KA35AB0307,2020-03-03,Active,2028-06-15,MA1kn0485038,ENGhq38883,2019,11,4,134838,2000,BS4,Automatic,Certified,Zero Depreciation,2026-01-11,1379723,No
+308,Mahindra,XUV700,XUV700 ZXi,White,Diesel,KA08AB0308,2022-10-24,Expired,2028-04-01,MA1kb1016450,ENGQq50203,2014,4,2,105296,1000,BS6,Automatic,Certified,Zero Depreciation,2026-05-08,577105,No
+309,Volkswagen,Polo,Polo SX,Black,Electric,KA95AB0309,2020-10-20,Expired,2027-02-24,MA1nq1865478,ENGnc18859,2013,6,1,133242,800,BS4,Manual,Non certified,Third Party,2025-10-21,1481780,Yes
+310,Maruti,Alto,Alto ZXi,Red,Petrol,KA16AB0310,2022-05-31,Expired,2027-02-22,MA1PP9401960,ENGDm10286,2014,9,4,13676,1000,BS6,Manual,Non certified,Comprehensive,2026-04-29,749599,No
+311,Volkswagen,Virtus,Virtus ZXi,Silver,Electric,KA75AB0311,2018-01-24,Expired,2027-10-16,MA1Gt5171247,ENGQY98184,2019,5,2,114371,1200,BS6,Automatic,Certified,Third Party,2025-08-22,1471478,Yes
+312,Toyota,Fortuner,Fortuner SX,Red,CNG,KA80AB0312,2015-08-27,Expired,2027-10-27,MA1vL7426783,ENGCh23104,2020,12,1,55056,800,BS4,Automatic,Non certified,Third Party,2026-06-19,395951,No
+313,Honda,Jazz,Jazz ZXi,Black,CNG,KA10AB0313,2024-03-19,Expired,2027-07-15,MA1bt6042738,ENGSK30218,2017,10,2,135246,1500,BS6,Manual,Non certified,Third Party,2025-08-18,511888,No
+314,Tata,Tiago,Tiago VXi,Red,CNG,KA30AB0314,2021-01-29,Expired,2026-06-04,MA1yZ2515978,ENGCu69070,2018,11,2,111535,800,BS6,Automatic,Certified,Zero Depreciation,2025-09-15,1426575,No
+315,Honda,Jazz,Jazz EX,Grey,CNG,KA34AB0315,2021-02-22,Active,2027-04-06,MA1PR6774725,ENGOX81182,2013,4,3,58893,800,BS6,Automatic,Certified,Zero Depreciation,2026-04-16,1048156,No
+316,Hyundai,Venue,Venue SX,Grey,Petrol,KA10AB0316,2016-06-05,Expired,2026-10-29,MA1fU8334388,ENGzo86283,2016,6,3,137605,1500,BS6,Manual,Certified,Third Party,2026-06-07,821825,No
+317,Toyota,Innova,Innova EX,Silver,Diesel,KA01AB0317,2023-03-15,Active,2025-12-31,MA1iv8438921,ENGiG19215,2013,12,3,41096,800,BS4,Manual,Certified,Zero Depreciation,2025-12-17,410833,Yes
+318,Mahindra,Scorpio,Scorpio VXi,Black,CNG,KA46AB0318,2016-07-27,Active,2027-09-14,MA1pn3663357,ENGiY36494,2013,11,2,27515,1200,BS4,Automatic,Non certified,Third Party,2025-09-09,1133997,Yes
+319,Kia,Seltos,Seltos ZXi,Silver,CNG,KA05AB0319,2016-05-08,Expired,2028-03-22,MA1Wu2437869,ENGox98050,2013,1,3,98628,800,BS4,Automatic,Non certified,Third Party,2026-06-08,529479,Yes
+320,Toyota,Urban Cruiser,Urban Cruiser ZXi,Blue,Electric,KA29AB0320,2020-10-21,Expired,2028-05-26,MA1Fy4888886,ENGHX36127,2018,3,3,50980,1200,BS6,Manual,Certified,Comprehensive,2025-08-08,1258618,Yes
+321,Tata,Altroz,Altroz EX,Black,CNG,KA58AB0321,2018-08-08,Expired,2027-10-04,MA1WV6008870,ENGad11623,2020,1,2,53737,800,BS6,Automatic,Non certified,Comprehensive,2026-03-13,1275973,Yes
+322,Maruti,Alto,Alto VXi,Black,Electric,KA43AB0322,2019-09-19,Expired,2027-04-18,MA1fn7202357,ENGMm83587,2018,11,4,144583,800,BS6,Manual,Non certified,Comprehensive,2026-06-05,879073,No
+323,Mahindra,Thar,Thar VXi,White,Electric,KA78AB0323,2017-05-19,Expired,2027-12-08,MA1MI3155263,ENGUN40108,2022,10,2,131302,1000,BS6,Manual,Non certified,Comprehensive,2026-07-04,1373544,Yes
+324,Hyundai,i10,i10 EX,Silver,Electric,KA34AB0324,2020-10-11,Active,2025-10-21,MA1Cp9875097,ENGVZ36728,2020,5,1,97920,2000,BS6,Manual,Certified,Zero Depreciation,2025-12-14,1081496,Yes
+325,Honda,City,City SX,Silver,Petrol,KA63AB0325,2021-03-27,Expired,2026-01-16,MA1UE1992007,ENGNX07513,2021,3,3,92562,1000,BS6,Automatic,Certified,Third Party,2025-12-06,1197695,No
+326,Toyota,Urban Cruiser,Urban Cruiser LXi,Green,Petrol,KA01AB0326,2016-05-16,Active,2025-11-18,MA1Mi3631441,ENGOi39953,2021,12,2,55581,1000,BS4,Manual,Certified,Zero Depreciation,2025-10-19,786501,No
+327,Honda,Amaze,Amaze EX,Green,Petrol,KA95AB0327,2016-07-13,Expired,2027-10-03,MA1RQ2841787,ENGbP42489,2015,9,1,121781,1000,BS6,Manual,Certified,Comprehensive,2026-03-02,1473715,Yes
+328,Maruti,Swift,Swift SX,Blue,Diesel,KA99AB0328,2022-08-16,Expired,2027-10-22,MA1FV5758820,ENGcL88305,2017,12,4,130382,1200,BS4,Automatic,Certified,Third Party,2025-11-29,764326,No
+329,Skoda,Octavia,Octavia EX,Black,Petrol,KA78AB0329,2023-12-15,Active,2027-08-02,MA1QW1695857,ENGSw52358,2021,5,1,39470,800,BS6,Manual,Non certified,Comprehensive,2026-06-20,966471,Yes
+330,Toyota,Glanza,Glanza SX,Black,Petrol,KA75AB0330,2018-07-11,Active,2026-04-04,MA1vE1160310,ENGHy93496,2014,7,1,84847,1200,BS6,Manual,Certified,Third Party,2025-07-18,402667,Yes
+331,Honda,WR-V,WR-V LXi,White,Diesel,KA40AB0331,2018-04-01,Expired,2026-06-01,MA1Po5268236,ENGLZ22403,2017,3,1,131559,2000,BS6,Manual,Certified,Third Party,2026-01-14,1215802,No
+332,Mahindra,Thar,Thar EX,Black,Electric,KA56AB0332,2015-11-21,Expired,2026-04-22,MA1OT2511370,ENGDu68640,2015,6,3,66142,2000,BS6,Automatic,Certified,Comprehensive,2025-08-06,1400105,No
+333,Toyota,Glanza,Glanza LXi,Green,Petrol,KA21AB0333,2023-07-22,Expired,2026-02-04,MA1MF2510136,ENGGx14901,2019,1,3,144671,1000,BS6,Manual,Non certified,Comprehensive,2026-02-27,1424811,No
+334,Toyota,Urban Cruiser,Urban Cruiser EX,Red,Petrol,KA58AB0334,2016-09-12,Expired,2026-06-22,MA1AI0081960,ENGxC07920,2020,10,2,63664,1500,BS4,Automatic,Non certified,Zero Depreciation,2026-06-25,1061284,No
+335,Skoda,Kushaq,Kushaq ZXi,Blue,Electric,KA69AB0335,2015-08-08,Expired,2027-01-16,MA1eY0854718,ENGLg16149,2017,4,1,121915,2000,BS4,Manual,Non certified,Comprehensive,2025-07-08,725070,No
+336,Honda,WR-V,WR-V VXi,Blue,Petrol,KA02AB0336,2018-11-07,Expired,2025-10-06,MA1Zy3628449,ENGkD61410,2015,4,2,78440,1000,BS6,Automatic,Non certified,Zero Depreciation,2026-02-20,662326,Yes
+337,Volkswagen,Virtus,Virtus VXi,Green,Diesel,KA76AB0337,2023-09-10,Expired,2028-02-04,MA1yV8662291,ENGzl99251,2021,9,1,87067,2000,BS6,Manual,Non certified,Comprehensive,2026-05-10,474841,No
+338,Mahindra,XUV300,XUV300 EX,Blue,Petrol,KA69AB0338,2024-03-15,Active,2025-12-16,MA1ni4382420,ENGUT85757,2022,9,1,45668,1500,BS4,Automatic,Certified,Third Party,2026-01-12,850174,Yes
+339,Tata,Harrier,Harrier LXi,Grey,CNG,KA79AB0339,2016-09-11,Expired,2027-02-12,MA1Zd6434339,ENGtj86092,2013,3,2,35642,1500,BS6,Automatic,Certified,Comprehensive,2026-01-16,462744,Yes
+340,Volkswagen,Taigun,Taigun ZXi,White,CNG,KA44AB0340,2015-08-24,Expired,2026-12-14,MA1cR9736764,ENGRI14802,2013,6,2,130189,2000,BS6,Manual,Non certified,Comprehensive,2025-09-21,1322451,Yes
+341,Volkswagen,Polo,Polo EX,White,CNG,KA27AB0341,2021-01-30,Active,2027-07-19,MA1XS0432752,ENGMf35235,2017,2,2,103329,2000,BS4,Automatic,Certified,Comprehensive,2026-01-18,1294853,Yes
+342,Mahindra,Bolero,Bolero ZXi,Blue,Electric,KA56AB0342,2023-02-02,Active,2028-03-19,MA1Li2202958,ENGnQ24424,2019,10,1,72923,1200,BS6,Automatic,Non certified,Comprehensive,2026-01-18,920251,Yes
+343,Mahindra,Thar,Thar EX,Black,Diesel,KA58AB0343,2018-06-23,Active,2026-05-29,MA1RO7988980,ENGoV57919,2020,12,3,145372,1000,BS4,Manual,Certified,Comprehensive,2026-06-02,836661,No
+344,Volkswagen,Taigun,Taigun EX,Green,Electric,KA66AB0344,2020-05-31,Expired,2026-04-30,MA1RN6123141,ENGZp54127,2023,10,1,95572,1200,BS6,Manual,Certified,Comprehensive,2025-12-22,499215,No
+345,Toyota,Innova,Innova EX,Grey,Petrol,KA14AB0345,2017-12-01,Expired,2027-08-09,MA1AL1666442,ENGqI00328,2014,7,4,115722,1000,BS4,Manual,Non certified,Zero Depreciation,2025-11-22,544997,No
+346,Renault,Triber,Triber VXi,Red,Electric,KA92AB0346,2016-12-13,Expired,2028-05-16,MA1iX9640803,ENGIQ14315,2013,6,4,99790,1000,BS4,Automatic,Certified,Comprehensive,2026-05-05,554831,No
+347,Toyota,Fortuner,Fortuner SX,Red,Diesel,KA78AB0347,2021-05-12,Expired,2027-05-01,MA1Np3069707,ENGmP57032,2020,10,2,126915,1500,BS4,Manual,Non certified,Comprehensive,2026-04-03,829070,Yes
+348,Volkswagen,Polo,Polo ZXi,Blue,Diesel,KA78AB0348,2023-11-19,Expired,2028-03-16,MA1PU6951728,ENGIv25752,2023,6,4,77466,1200,BS4,Automatic,Non certified,Comprehensive,2025-10-06,422766,Yes
+349,Kia,Sonet,Sonet ZXi,White,Diesel,KA04AB0349,2016-08-18,Expired,2026-02-19,MA1cM7793110,ENGGI31088,2022,6,4,122668,1200,BS6,Manual,Non certified,Third Party,2025-11-26,1393172,No
+350,Honda,City,City SX,Silver,Diesel,KA94AB0350,2017-02-03,Expired,2025-11-18,MA1dc0479887,ENGTs06380,2015,6,4,89337,1200,BS4,Automatic,Certified,Comprehensive,2026-03-30,1300943,No
+351,Hyundai,Verna,Verna EX,White,Electric,KA42AB0351,2018-12-29,Active,2026-10-26,MA1ca0350014,ENGia81982,2013,10,3,37042,800,BS6,Automatic,Certified,Third Party,2026-04-26,970535,No
+352,Hyundai,i20,i20 LXi,Blue,Diesel,KA21AB0352,2017-09-12,Expired,2028-03-31,MA1OZ3580294,ENGVg86981,2013,4,2,123839,1200,BS4,Manual,Non certified,Third Party,2026-06-02,705251,No
+353,Volkswagen,Taigun,Taigun ZXi,Black,CNG,KA84AB0353,2021-02-03,Active,2025-11-29,MA1Nq2275522,ENGuq62769,2019,11,2,94485,1000,BS6,Manual,Certified,Third Party,2025-08-26,509179,No
+354,Skoda,Slavia,Slavia EX,Red,Diesel,KA52AB0354,2019-03-12,Expired,2028-05-28,MA1QB5011893,ENGMI12862,2017,11,2,58329,2000,BS6,Manual,Non certified,Third Party,2025-09-07,335844,No
+355,Mahindra,Bolero,Bolero LXi,Red,Electric,KA13AB0355,2024-06-12,Expired,2028-01-06,MA1eC5413157,ENGmx46341,2020,9,3,63186,1200,BS6,Manual,Certified,Zero Depreciation,2025-07-20,1005346,No
+356,Renault,Kiger,Kiger VXi,Red,Petrol,KA10AB0356,2016-05-12,Expired,2027-08-26,MA1lW1407041,ENGzn01248,2017,12,4,6416,1200,BS6,Manual,Non certified,Zero Depreciation,2026-05-04,796418,Yes
+357,Renault,Kwid,Kwid VXi,Green,Electric,KA21AB0357,2021-06-19,Active,2026-02-08,MA1Pm9638641,ENGfF32190,2017,9,2,110343,1200,BS6,Manual,Certified,Zero Depreciation,2025-12-11,370731,Yes
+358,Renault,Triber,Triber SX,White,CNG,KA99AB0358,2023-03-13,Active,2027-12-23,MA1HR3661248,ENGof06686,2019,4,2,101981,1000,BS4,Automatic,Certified,Comprehensive,2025-09-12,451919,No
+359,Kia,Carens,Carens SX,Blue,CNG,KA72AB0359,2021-06-21,Active,2025-12-26,MA1Xr1823322,ENGsb60160,2019,10,2,110256,800,BS6,Automatic,Certified,Comprehensive,2026-05-31,1250838,No
+360,Kia,Seltos,Seltos VXi,Black,Diesel,KA26AB0360,2020-05-09,Expired,2025-11-19,MA1VC3006634,ENGmn98097,2019,1,3,36591,800,BS4,Manual,Certified,Third Party,2026-06-15,638193,Yes
+361,Maruti,Baleno,Baleno LXi,Red,Diesel,KA27AB0361,2017-04-07,Expired,2027-01-13,MA1uM4523072,ENGic93520,2013,4,3,8699,1000,BS4,Automatic,Non certified,Comprehensive,2026-06-22,503416,No
+362,Hyundai,Creta,Creta LXi,Green,Diesel,KA20AB0362,2018-09-09,Active,2026-01-14,MA1Cw8163493,ENGbh12389,2020,5,3,34306,800,BS4,Manual,Non certified,Zero Depreciation,2025-07-30,310656,Yes
+363,Honda,Amaze,Amaze VXi,Red,Electric,KA29AB0363,2016-03-20,Expired,2027-05-07,MA1dW6446187,ENGHJ26657,2015,6,1,122320,800,BS6,Manual,Non certified,Comprehensive,2025-11-03,520294,Yes
+364,Volkswagen,Virtus,Virtus ZXi,Black,Petrol,KA17AB0364,2017-06-01,Expired,2026-11-04,MA1zc5122931,ENGOY47761,2013,4,1,70525,1500,BS4,Automatic,Non certified,Zero Depreciation,2025-10-28,593084,Yes
+365,Renault,Triber,Triber SX,White,Diesel,KA37AB0365,2021-02-13,Active,2025-11-01,MA1Jm5531960,ENGJk35248,2023,11,3,126964,1500,BS6,Automatic,Certified,Third Party,2026-04-03,1212924,No
+366,Hyundai,i20,i20 EX,Grey,Electric,KA58AB0366,2016-09-08,Active,2028-03-01,MA1HC1226533,ENGwC84259,2015,4,4,54258,1500,BS4,Automatic,Certified,Third Party,2026-04-10,202499,No
+367,Mahindra,Thar,Thar ZXi,White,Electric,KA39AB0367,2020-01-18,Expired,2025-10-09,MA1qo1839167,ENGHF37843,2020,6,3,9271,1000,BS6,Manual,Certified,Comprehensive,2025-07-14,460495,Yes
+368,Kia,Seltos,Seltos ZXi,Black,Petrol,KA22AB0368,2016-04-23,Active,2027-01-25,MA1Zl8515556,ENGHP10503,2019,1,2,98923,1200,BS4,Manual,Non certified,Comprehensive,2025-07-20,707690,Yes
+369,Renault,Kwid,Kwid SX,Grey,Electric,KA54AB0369,2023-12-26,Expired,2028-01-16,MA1kM0211993,ENGSH12714,2013,3,2,7888,2000,BS4,Manual,Non certified,Zero Depreciation,2025-10-04,546563,No
+370,Volkswagen,Taigun,Taigun LXi,Blue,Electric,KA84AB0370,2018-08-31,Active,2026-10-15,MA1gp8526144,ENGhI31713,2022,11,3,58625,1500,BS6,Manual,Certified,Third Party,2026-01-18,225597,No
+371,Skoda,Octavia,Octavia EX,Blue,Electric,KA41AB0371,2021-02-04,Expired,2025-09-07,MA1Hq7125780,ENGnb14824,2016,5,2,127042,2000,BS4,Manual,Certified,Zero Depreciation,2025-10-19,1461737,Yes
+372,Skoda,Octavia,Octavia SX,Silver,Electric,KA20AB0372,2022-09-10,Expired,2028-06-16,MA1LR5264777,ENGYz63746,2019,4,2,24039,800,BS6,Automatic,Non certified,Comprehensive,2026-04-18,683863,Yes
+373,Honda,WR-V,WR-V ZXi,White,Diesel,KA98AB0373,2020-03-06,Active,2026-09-07,MA1Yw3985683,ENGBU02932,2019,8,4,57986,1500,BS6,Manual,Non certified,Comprehensive,2025-08-13,418393,No
+374,Kia,Carens,Carens LXi,Blue,Diesel,KA26AB0374,2023-12-11,Active,2027-01-08,MA1aS0275484,ENGDQ43734,2015,10,1,141219,800,BS6,Automatic,Certified,Third Party,2025-07-21,826977,Yes
+375,Tata,Nexon,Nexon ZXi,Red,Diesel,KA10AB0375,2016-04-26,Active,2026-11-18,MA1Ku6416872,ENGoA51579,2013,3,2,12489,1200,BS6,Automatic,Non certified,Zero Depreciation,2026-01-25,777830,Yes
+376,Honda,Amaze,Amaze EX,Grey,Petrol,KA49AB0376,2017-12-12,Expired,2025-10-17,MA1KM5299473,ENGTw31987,2021,1,3,86634,2000,BS4,Automatic,Certified,Third Party,2026-05-18,1305202,No
+377,Skoda,Slavia,Slavia ZXi,Silver,Electric,KA93AB0377,2020-10-17,Expired,2027-05-14,MA1qJ6566440,ENGCH54466,2019,3,2,106757,800,BS6,Manual,Non certified,Comprehensive,2025-11-11,240803,Yes
+378,Mahindra,Bolero,Bolero LXi,Grey,Diesel,KA74AB0378,2023-12-06,Expired,2026-02-01,MA1gg9627740,ENGhA79056,2022,8,3,98609,2000,BS6,Manual,Non certified,Comprehensive,2026-05-09,1175099,No
+379,Skoda,Slavia,Slavia LXi,Green,Diesel,KA37AB0379,2023-12-26,Active,2025-10-13,MA1dm2870655,ENGNw76863,2018,5,2,33778,800,BS6,Automatic,Non certified,Zero Depreciation,2025-10-23,501155,Yes
+380,Kia,EV6,EV6 EX,Green,Diesel,KA93AB0380,2017-11-17,Active,2027-09-04,MA1mb2526302,ENGcx69293,2022,9,1,79419,1200,BS6,Manual,Non certified,Zero Depreciation,2025-08-07,231422,Yes
+381,Tata,Nexon,Nexon EX,White,CNG,KA06AB0381,2016-08-15,Expired,2027-06-14,MA1mE1319689,ENGVP91473,2014,10,4,89007,1000,BS6,Manual,Certified,Comprehensive,2026-01-09,308145,No
+382,Mahindra,Thar,Thar EX,Blue,Diesel,KA69AB0382,2017-03-24,Expired,2027-09-29,MA1Ag3407600,ENGIH51555,2015,11,3,137689,1000,BS6,Automatic,Certified,Zero Depreciation,2026-05-17,603609,Yes
+383,Honda,WR-V,WR-V SX,Grey,Electric,KA01AB0383,2016-03-02,Active,2026-04-26,MA1iH2956735,ENGGk61001,2018,6,2,66161,800,BS4,Manual,Certified,Zero Depreciation,2026-01-23,833916,No
+384,Maruti,Dzire,Dzire EX,Red,CNG,KA05AB0384,2018-06-23,Expired,2027-12-12,MA1PQ7425038,ENGlr52198,2019,11,1,67764,1200,BS4,Manual,Certified,Third Party,2025-12-22,975767,No
+385,Toyota,Glanza,Glanza SX,Silver,Petrol,KA25AB0385,2023-01-13,Active,2026-02-17,MA1my9478455,ENGAl49313,2018,10,2,46331,1000,BS6,Automatic,Certified,Comprehensive,2025-11-08,1394946,No
+386,Maruti,Swift,Swift LXi,Green,CNG,KA69AB0386,2016-08-14,Active,2027-09-20,MA1QF3328795,ENGNq41102,2019,1,3,117451,800,BS4,Manual,Certified,Comprehensive,2025-12-12,244825,No
+387,Skoda,Kushaq,Kushaq ZXi,Silver,CNG,KA45AB0387,2018-05-04,Expired,2027-05-15,MA1fY0054753,ENGYS08470,2022,4,1,122141,1000,BS6,Automatic,Certified,Zero Depreciation,2026-04-19,1398120,No
+388,Tata,Harrier,Harrier LXi,White,Petrol,KA97AB0388,2015-08-31,Active,2027-01-26,MA1Ui7676200,ENGbb85000,2021,4,4,90119,1200,BS4,Automatic,Certified,Third Party,2025-11-13,612873,Yes
+389,Skoda,Kushaq,Kushaq VXi,Green,Petrol,KA16AB0389,2019-05-07,Expired,2028-03-28,MA1qU0914673,ENGJZ27015,2023,9,4,20443,1500,BS6,Manual,Non certified,Third Party,2025-09-07,1473818,No
+390,Volkswagen,Taigun,Taigun VXi,Silver,CNG,KA85AB0390,2016-03-25,Active,2026-03-04,MA1gk5086135,ENGMH73480,2014,1,1,6389,800,BS6,Automatic,Certified,Zero Depreciation,2026-05-15,841027,No
+391,Skoda,Octavia,Octavia SX,Blue,CNG,KA12AB0391,2018-08-31,Active,2028-06-07,MA1Lp4617972,ENGdQ63234,2019,2,4,29657,1000,BS4,Automatic,Non certified,Third Party,2026-06-17,794158,No
+392,Mahindra,XUV300,XUV300 EX,Black,Diesel,KA49AB0392,2024-06-01,Active,2026-09-12,MA1kF5272153,ENGbo72972,2020,2,1,146431,800,BS4,Automatic,Non certified,Comprehensive,2025-08-23,721385,Yes
+393,Volkswagen,Taigun,Taigun ZXi,White,Petrol,KA44AB0393,2021-04-29,Active,2027-08-04,MA1cS8849676,ENGuK74044,2015,10,2,8564,2000,BS6,Automatic,Non certified,Zero Depreciation,2026-06-10,1446147,Yes
+394,Mahindra,XUV300,XUV300 VXi,Red,Electric,KA60AB0394,2019-12-02,Active,2025-08-07,MA1ta2175534,ENGWp31888,2017,4,4,18293,1000,BS4,Manual,Certified,Third Party,2025-08-03,811011,Yes
+395,Hyundai,Creta,Creta LXi,Red,CNG,KA39AB0395,2022-09-03,Active,2027-03-02,MA1dn3268764,ENGPL60745,2014,6,2,108284,1000,BS6,Manual,Certified,Third Party,2026-04-18,1400579,Yes
+396,Honda,Amaze,Amaze EX,Blue,Petrol,KA15AB0396,2022-09-19,Expired,2026-11-04,MA1TB9702184,ENGIy72357,2017,11,4,7126,1000,BS4,Manual,Certified,Zero Depreciation,2026-03-18,1287451,No
+397,Honda,Amaze,Amaze VXi,Blue,Electric,KA78AB0397,2019-10-04,Expired,2025-09-11,MA1zK7768900,ENGdx50411,2022,3,4,148624,1200,BS4,Automatic,Certified,Zero Depreciation,2025-12-17,388389,No
+398,Hyundai,i20,i20 EX,White,Electric,KA23AB0398,2021-07-07,Expired,2026-01-17,MA1ZT4359314,ENGXQ57895,2015,12,4,66913,2000,BS4,Manual,Certified,Third Party,2026-05-25,1361903,No
+399,Hyundai,i20,i20 EX,Green,Petrol,KA04AB0399,2019-07-31,Expired,2027-03-23,MA1Fo3617472,ENGZY06938,2023,5,3,103570,1000,BS6,Automatic,Certified,Comprehensive,2025-07-23,622469,Yes
+400,Honda,City,City VXi,Grey,CNG,KA51AB0400,2017-05-26,Expired,2026-06-23,MA1RU3177086,ENGur95095,2019,4,4,78516,2000,BS4,Automatic,Certified,Zero Depreciation,2026-03-03,950287,Yes
+401,Renault,Kwid,Kwid LXi,Silver,Petrol,KA16AB0401,2016-02-15,Expired,2027-08-25,MA1he5930414,ENGmC35553,2015,9,4,11707,2000,BS4,Automatic,Certified,Zero Depreciation,2026-01-15,531735,Yes
+402,Mahindra,Scorpio,Scorpio ZXi,Blue,Petrol,KA81AB0402,2022-07-21,Active,2027-12-10,MA1KW1095121,ENGgV29398,2023,8,4,52205,1200,BS4,Automatic,Non certified,Third Party,2026-03-18,670707,No
+403,Mahindra,Bolero,Bolero EX,White,Electric,KA76AB0403,2018-12-02,Expired,2026-11-24,MA1Am3714251,ENGIU15009,2021,11,4,149715,800,BS4,Automatic,Certified,Zero Depreciation,2025-10-21,642831,No
+404,Volkswagen,Taigun,Taigun SX,White,Petrol,KA50AB0404,2021-01-01,Active,2028-01-16,MA1LA7416851,ENGHI04419,2014,11,4,54702,1200,BS6,Manual,Certified,Comprehensive,2026-02-05,1475822,Yes
+405,Kia,EV6,EV6 ZXi,Green,Electric,KA91AB0405,2021-05-06,Active,2028-06-18,MA1hn7492379,ENGln14901,2020,11,3,119840,2000,BS6,Automatic,Non certified,Zero Depreciation,2025-10-09,1425353,Yes
+406,Volkswagen,Taigun,Taigun LXi,Grey,CNG,KA39AB0406,2017-07-01,Active,2027-01-15,MA1Ra7978119,ENGme68588,2022,11,1,13059,800,BS6,Automatic,Certified,Third Party,2026-06-28,1309087,No
+407,Volkswagen,Taigun,Taigun EX,Blue,Electric,KA76AB0407,2019-11-03,Active,2028-04-04,MA1Op4433453,ENGIK88253,2023,1,4,61867,1000,BS6,Automatic,Certified,Comprehensive,2025-10-04,469132,No
+408,Renault,Kiger,Kiger LXi,Grey,Electric,KA51AB0408,2019-06-27,Active,2027-09-06,MA1jf9792223,ENGKs51848,2020,12,3,18054,1000,BS6,Automatic,Certified,Zero Depreciation,2025-09-20,1111433,No
+409,Hyundai,i20,i20 VXi,Grey,Petrol,KA06AB0409,2020-10-26,Active,2027-08-21,MA1Sr7781604,ENGCj64123,2018,3,3,24260,1500,BS6,Manual,Certified,Zero Depreciation,2026-06-02,1168600,No
+410,Mahindra,XUV300,XUV300 ZXi,Black,CNG,KA85AB0410,2023-09-08,Active,2027-08-12,MA1TQ2437968,ENGIe83520,2017,12,4,112085,1500,BS4,Manual,Non certified,Third Party,2025-08-21,992596,No
+411,Hyundai,i20,i20 ZXi,White,CNG,KA64AB0411,2017-07-03,Expired,2026-02-23,MA1Vb9572462,ENGpK22896,2017,11,2,41826,1200,BS4,Automatic,Certified,Zero Depreciation,2025-11-16,1093856,Yes
+412,Mahindra,Scorpio,Scorpio VXi,Green,Electric,KA34AB0412,2022-05-14,Expired,2027-02-26,MA1Zx2973591,ENGSz12539,2015,8,2,103576,1200,BS4,Automatic,Non certified,Zero Depreciation,2026-01-07,808795,No
+413,Maruti,Dzire,Dzire LXi,Grey,Diesel,KA75AB0413,2019-06-19,Expired,2027-11-15,MA1KJ5857160,ENGTi91527,2013,8,1,28177,1200,BS6,Automatic,Certified,Comprehensive,2026-01-13,343165,Yes
+414,Honda,Amaze,Amaze EX,Black,Petrol,KA66AB0414,2020-06-29,Active,2025-12-04,MA1zt5375949,ENGUL43675,2017,6,1,120348,1000,BS4,Automatic,Certified,Zero Depreciation,2025-08-26,1283155,No
+415,Skoda,Slavia,Slavia ZXi,Blue,Petrol,KA77AB0415,2018-12-14,Expired,2026-05-21,MA1Xd4269809,ENGKn59118,2019,12,2,24191,1000,BS6,Manual,Certified,Third Party,2025-12-07,1468716,Yes
+416,Renault,Triber,Triber LXi,Blue,Diesel,KA34AB0416,2021-12-08,Active,2027-12-16,MA1gB5044330,ENGzL44420,2022,7,3,142251,1500,BS4,Manual,Non certified,Zero Depreciation,2026-03-20,1379801,No
+417,Kia,Seltos,Seltos EX,Green,Electric,KA37AB0417,2020-07-06,Active,2026-10-31,MA1Hw2799013,ENGaW11897,2022,8,1,141323,2000,BS4,Manual,Certified,Comprehensive,2026-06-28,1465368,No
+418,Volkswagen,Taigun,Taigun LXi,Red,Diesel,KA36AB0418,2016-07-23,Active,2028-01-01,MA1of6251534,ENGWn10174,2015,1,2,66152,800,BS4,Automatic,Certified,Third Party,2025-10-20,589802,No
+419,Kia,Sonet,Sonet LXi,Green,CNG,KA81AB0419,2019-01-22,Active,2028-07-01,MA1tl3513002,ENGlW99073,2022,8,4,138675,1200,BS4,Automatic,Non certified,Comprehensive,2026-04-23,279645,No
+420,Tata,Tiago,Tiago ZXi,Silver,Diesel,KA85AB0420,2022-01-11,Active,2027-09-27,MA1yo8517152,ENGGF77117,2018,2,3,75974,800,BS6,Manual,Certified,Third Party,2026-04-17,950153,Yes
+421,Mahindra,XUV700,XUV700 SX,Green,CNG,KA74AB0421,2016-11-08,Active,2027-03-06,MA1TE0375682,ENGNk08353,2023,3,3,32470,1200,BS6,Manual,Certified,Third Party,2025-11-15,974805,No
+422,Tata,Tiago,Tiago SX,Black,CNG,KA66AB0422,2019-04-16,Expired,2028-01-29,MA1sP8940931,ENGKq20057,2022,5,4,108170,800,BS6,Manual,Non certified,Third Party,2026-04-08,279280,No
+423,Renault,Kiger,Kiger SX,Silver,Electric,KA31AB0423,2018-12-18,Active,2027-10-15,MA1Cx7402370,ENGFb76509,2013,7,4,95232,1000,BS4,Automatic,Certified,Comprehensive,2025-11-07,401498,No
+424,Maruti,Dzire,Dzire EX,Black,Electric,KA98AB0424,2022-11-28,Expired,2026-09-10,MA1Bd0151300,ENGAK63061,2013,1,1,145786,800,BS4,Manual,Certified,Zero Depreciation,2025-12-13,746110,Yes
+425,Toyota,Glanza,Glanza EX,Black,Electric,KA16AB0425,2021-01-24,Expired,2026-11-30,MA1HM1357577,ENGWt61030,2016,3,1,120494,1500,BS6,Automatic,Non certified,Third Party,2026-04-13,1179595,Yes
+426,Volkswagen,Taigun,Taigun EX,Silver,Diesel,KA84AB0426,2019-11-03,Expired,2028-01-15,MA1vN1121820,ENGLu50646,2013,5,2,140334,1000,BS4,Manual,Non certified,Zero Depreciation,2026-06-22,846826,No
+427,Mahindra,XUV300,XUV300 VXi,Silver,CNG,KA23AB0427,2023-06-27,Active,2026-08-19,MA1fs6032855,ENGyj06002,2016,3,1,97304,1200,BS4,Manual,Non certified,Zero Depreciation,2026-01-22,543699,Yes
+428,Tata,Tiago,Tiago LXi,Red,CNG,KA82AB0428,2023-01-20,Active,2027-06-10,MA1za7450314,ENGXR85255,2018,7,3,17024,800,BS6,Automatic,Certified,Zero Depreciation,2025-12-15,1492406,No
+429,Renault,Triber,Triber SX,Red,Petrol,KA75AB0429,2020-10-21,Expired,2026-08-20,MA1kF8890615,ENGyJ13481,2014,7,1,42409,800,BS6,Automatic,Non certified,Zero Depreciation,2026-05-09,965651,No
+430,Skoda,Octavia,Octavia EX,Silver,CNG,KA62AB0430,2019-07-02,Active,2025-09-20,MA1CQ0302242,ENGxe44344,2016,7,1,111561,1500,BS6,Automatic,Non certified,Zero Depreciation,2025-10-25,677613,Yes
+431,Mahindra,Scorpio,Scorpio LXi,Green,CNG,KA16AB0431,2022-04-03,Active,2027-02-16,MA1fQ0508031,ENGqG30684,2018,3,4,37259,2000,BS4,Automatic,Non certified,Comprehensive,2026-06-19,812400,Yes
+432,Toyota,Fortuner,Fortuner LXi,Silver,Electric,KA90AB0432,2022-04-09,Expired,2026-11-10,MA1MK7481599,ENGpt17838,2020,11,3,29366,1200,BS4,Manual,Certified,Third Party,2025-10-05,1251630,Yes
+433,Toyota,Glanza,Glanza VXi,Green,CNG,KA58AB0433,2019-01-15,Expired,2028-04-12,MA1Qv3847005,ENGbc32259,2013,2,1,8170,2000,BS4,Manual,Non certified,Comprehensive,2026-03-31,337057,Yes
+434,Kia,Carens,Carens ZXi,Blue,Petrol,KA71AB0434,2022-07-12,Active,2026-11-12,MA1wr3130767,ENGHM94152,2018,3,4,101612,1500,BS6,Manual,Non certified,Third Party,2025-12-10,1066446,Yes
+435,Skoda,Kushaq,Kushaq ZXi,Blue,Electric,KA75AB0435,2017-04-11,Active,2025-12-15,MA1ds8749317,ENGsJ35200,2020,7,1,100317,1200,BS4,Automatic,Non certified,Zero Depreciation,2025-11-24,203816,Yes
+436,Toyota,Urban Cruiser,Urban Cruiser LXi,White,Diesel,KA78AB0436,2016-08-11,Expired,2027-03-07,MA1oa2361171,ENGhc84517,2023,8,1,143789,800,BS6,Manual,Non certified,Third Party,2026-03-02,931907,No
+437,Maruti,Dzire,Dzire ZXi,Red,Diesel,KA37AB0437,2018-05-26,Expired,2027-08-16,MA1Uz4826908,ENGRG37429,2021,12,3,6993,1500,BS6,Manual,Non certified,Zero Depreciation,2025-10-30,1050922,Yes
+438,Honda,Amaze,Amaze VXi,Black,Electric,KA13AB0438,2020-07-03,Expired,2025-09-22,MA1lP1550468,ENGRJ02720,2013,3,3,117311,1500,BS6,Manual,Certified,Zero Depreciation,2026-01-10,1029797,No
+439,Kia,Carens,Carens ZXi,Blue,Diesel,KA84AB0439,2015-10-09,Expired,2026-12-04,MA1QJ0664915,ENGUh20861,2014,7,3,131241,1000,BS6,Automatic,Certified,Zero Depreciation,2025-12-21,576832,No
+440,Renault,Triber,Triber LXi,Blue,Petrol,KA95AB0440,2023-04-13,Expired,2027-07-17,MA1rq7877184,ENGTq16185,2022,4,2,127062,1500,BS4,Automatic,Non certified,Zero Depreciation,2025-07-20,443147,No
+441,Toyota,Fortuner,Fortuner SX,Black,Diesel,KA54AB0441,2016-09-05,Active,2027-03-03,MA1Xg5778776,ENGtt05642,2015,1,2,40738,2000,BS4,Automatic,Certified,Zero Depreciation,2025-11-05,677663,No
+442,Toyota,Innova,Innova VXi,Red,Diesel,KA97AB0442,2018-02-16,Expired,2026-02-14,MA1zV2490003,ENGLc78481,2022,6,2,52665,800,BS4,Manual,Non certified,Comprehensive,2026-06-02,1282442,Yes
+443,Maruti,Dzire,Dzire ZXi,Blue,Diesel,KA54AB0443,2022-09-08,Expired,2026-06-01,MA1Ah2432152,ENGqf82588,2019,12,3,38231,1200,BS4,Automatic,Certified,Zero Depreciation,2026-01-20,279757,Yes
+444,Tata,Altroz,Altroz LXi,Grey,CNG,KA75AB0444,2015-09-02,Expired,2025-12-18,MA1sk0409823,ENGtw73471,2021,12,2,50916,1200,BS4,Automatic,Certified,Third Party,2025-11-26,1437853,Yes
+445,Hyundai,i20,i20 ZXi,Red,Electric,KA45AB0445,2023-02-10,Expired,2026-01-03,MA1OX1334118,ENGAe11954,2022,4,1,92300,1200,BS4,Manual,Non certified,Third Party,2025-09-05,1385751,Yes
+446,Hyundai,Verna,Verna ZXi,Red,Electric,KA96AB0446,2023-07-27,Active,2027-02-02,MA1ds5284261,ENGXk95371,2019,4,2,70305,1200,BS4,Manual,Certified,Third Party,2025-09-29,463789,Yes
+447,Renault,Triber,Triber VXi,Blue,Petrol,KA39AB0447,2022-01-10,Expired,2027-11-08,MA1xL0919894,ENGpO86967,2018,12,1,64460,1500,BS4,Automatic,Certified,Third Party,2025-09-07,1397208,Yes
+448,Toyota,Urban Cruiser,Urban Cruiser LXi,Red,Electric,KA32AB0448,2018-08-15,Active,2027-02-25,MA1vh1084131,ENGdL72863,2014,6,1,100395,2000,BS6,Manual,Certified,Zero Depreciation,2026-05-09,807344,Yes
+449,Kia,Sonet,Sonet SX,Black,Electric,KA71AB0449,2020-09-02,Active,2026-04-28,MA1IV5919735,ENGSj61205,2016,8,2,48490,800,BS4,Automatic,Non certified,Comprehensive,2026-06-03,382779,No
+450,Hyundai,i10,i10 VXi,White,Petrol,KA18AB0450,2015-11-04,Expired,2025-11-21,MA1QF2311534,ENGMl43462,2015,4,2,15646,1500,BS4,Automatic,Non certified,Zero Depreciation,2025-10-15,354794,Yes
+451,Skoda,Octavia,Octavia ZXi,White,CNG,KA69AB0451,2018-07-30,Active,2026-08-13,MA1SU1875637,ENGfE23909,2018,6,3,54896,2000,BS4,Manual,Certified,Zero Depreciation,2026-06-01,844186,Yes
+452,Skoda,Octavia,Octavia SX,Grey,CNG,KA06AB0452,2017-09-14,Active,2026-07-29,MA1xs8105774,ENGyT64982,2023,6,2,85465,2000,BS6,Manual,Certified,Third Party,2026-03-11,681779,No
+453,Hyundai,Verna,Verna LXi,Green,Petrol,KA45AB0453,2017-11-14,Expired,2026-08-09,MA1TM7205141,ENGoR72957,2017,1,2,130181,1200,BS4,Manual,Non certified,Third Party,2026-05-04,547585,No
+454,Volkswagen,Virtus,Virtus ZXi,Black,Electric,KA49AB0454,2017-05-20,Expired,2028-02-05,MA1Ip7143242,ENGQH61501,2021,12,2,75534,1200,BS4,Manual,Non certified,Zero Depreciation,2026-03-21,1450898,No
+455,Hyundai,Verna,Verna ZXi,Red,Petrol,KA17AB0455,2016-07-26,Active,2027-07-08,MA1gP5337851,ENGUP93095,2022,5,1,29528,800,BS4,Automatic,Certified,Zero Depreciation,2025-08-26,868063,Yes
+456,Kia,Sonet,Sonet ZXi,Black,CNG,KA47AB0456,2015-09-22,Expired,2028-02-06,MA1Fv3324330,ENGqP43052,2015,8,1,120050,1000,BS6,Manual,Certified,Third Party,2026-04-25,1032190,No
+457,Tata,Harrier,Harrier SX,Red,Diesel,KA27AB0457,2019-01-12,Expired,2028-06-25,MA1eO1231010,ENGtD32190,2018,3,4,45984,1000,BS4,Manual,Certified,Zero Depreciation,2026-02-04,578098,Yes
+458,Skoda,Slavia,Slavia LXi,Black,Petrol,KA80AB0458,2019-09-07,Active,2028-02-22,MA1LQ8002899,ENGvS31087,2018,8,4,69428,2000,BS6,Automatic,Certified,Zero Depreciation,2026-03-12,496074,No
+459,Toyota,Innova,Innova LXi,Red,Electric,KA98AB0459,2018-04-13,Expired,2025-10-08,MA1wA3571663,ENGGC35100,2018,5,4,76746,1200,BS4,Automatic,Non certified,Comprehensive,2025-08-09,1002187,Yes
+460,Toyota,Urban Cruiser,Urban Cruiser ZXi,Black,Electric,KA35AB0460,2023-01-29,Expired,2028-03-27,MA1jl5648781,ENGbL85089,2016,8,3,74174,800,BS6,Automatic,Non certified,Comprehensive,2026-06-04,846523,Yes
+461,Kia,Seltos,Seltos LXi,Red,Electric,KA24AB0461,2015-07-18,Active,2026-05-19,MA1bD6142024,ENGhm21450,2019,5,1,133606,800,BS6,Automatic,Certified,Zero Depreciation,2025-07-11,759886,No
+462,Volkswagen,Taigun,Taigun SX,Red,Diesel,KA38AB0462,2018-08-02,Expired,2028-03-16,MA1kK1652988,ENGni49081,2018,10,3,103892,2000,BS4,Manual,Certified,Comprehensive,2026-02-23,854019,No
+463,Tata,Altroz,Altroz LXi,White,Electric,KA92AB0463,2023-04-08,Active,2028-05-26,MA1Vy4201830,ENGGl91829,2014,11,3,57054,1500,BS6,Automatic,Non certified,Third Party,2026-02-25,224776,No
+464,Mahindra,Thar,Thar ZXi,Red,Petrol,KA59AB0464,2023-01-25,Expired,2028-04-09,MA1PJ4205006,ENGDg92169,2014,12,3,13202,1500,BS4,Manual,Non certified,Comprehensive,2025-09-05,930516,Yes
+465,Tata,Punch,Punch LXi,Blue,Petrol,KA85AB0465,2022-08-02,Expired,2028-03-05,MA1RZ6373397,ENGnO32162,2013,7,4,32839,1200,BS6,Manual,Certified,Zero Depreciation,2025-10-08,1266471,Yes
+466,Mahindra,XUV700,XUV700 ZXi,White,Electric,KA79AB0466,2020-03-20,Expired,2025-11-18,MA1nY5302272,ENGpE43824,2021,12,2,27271,1500,BS4,Automatic,Non certified,Zero Depreciation,2026-02-09,612174,Yes
+467,Toyota,Urban Cruiser,Urban Cruiser VXi,Black,CNG,KA42AB0467,2024-05-13,Active,2028-03-25,MA1wD8791386,ENGEy97284,2020,5,4,50655,2000,BS6,Manual,Non certified,Third Party,2026-06-22,669471,No
+468,Mahindra,XUV700,XUV700 LXi,Red,Electric,KA20AB0468,2022-11-16,Active,2025-08-28,MA1SB9026462,ENGXX53059,2021,10,4,21173,1500,BS6,Manual,Certified,Comprehensive,2025-07-11,1357593,Yes
+469,Tata,Harrier,Harrier LXi,White,CNG,KA01AB0469,2019-12-12,Expired,2026-03-30,MA1Dl3018801,ENGlF04627,2022,11,1,90739,1200,BS4,Manual,Certified,Comprehensive,2025-09-30,959646,No
+470,Toyota,Glanza,Glanza ZXi,Green,Petrol,KA25AB0470,2018-04-21,Active,2026-01-07,MA1lQ9179038,ENGaC59432,2015,2,4,133806,2000,BS6,Manual,Non certified,Comprehensive,2025-12-29,301828,Yes
+471,Honda,Jazz,Jazz SX,Blue,Petrol,KA81AB0471,2020-07-09,Active,2025-12-08,MA1Rv1436105,ENGVD98507,2015,7,1,80731,800,BS4,Manual,Certified,Third Party,2025-08-28,247933,No
+472,Volkswagen,Taigun,Taigun ZXi,Grey,Electric,KA55AB0472,2023-05-08,Expired,2027-11-16,MA1ls2772821,ENGlx72560,2016,10,4,26718,2000,BS4,Manual,Certified,Third Party,2026-01-20,996276,Yes
+473,Toyota,Urban Cruiser,Urban Cruiser LXi,Silver,CNG,KA32AB0473,2023-10-12,Expired,2026-05-16,MA1sy9516653,ENGzF83456,2023,7,4,73696,1200,BS6,Automatic,Certified,Third Party,2025-07-20,879337,No
+474,Maruti,Alto,Alto SX,Green,Petrol,KA10AB0474,2023-04-28,Expired,2026-08-03,MA1Pg1066725,ENGtu12391,2015,8,3,61710,1500,BS4,Manual,Certified,Comprehensive,2025-10-17,748794,Yes
+475,Skoda,Kushaq,Kushaq EX,Grey,CNG,KA53AB0475,2020-10-23,Active,2027-02-16,MA1tT6697416,ENGGi68999,2020,9,2,55535,2000,BS4,Manual,Certified,Third Party,2025-12-27,1263803,Yes
+476,Skoda,Kushaq,Kushaq EX,Grey,CNG,KA04AB0476,2018-01-26,Expired,2025-08-28,MA1LJ0262304,ENGpL81101,2021,5,3,44214,1000,BS4,Automatic,Non certified,Comprehensive,2026-06-18,486625,Yes
+477,Volkswagen,Taigun,Taigun SX,Grey,Electric,KA19AB0477,2020-02-27,Active,2028-06-08,MA1mu5670696,ENGtr23790,2017,12,4,96588,1000,BS6,Manual,Certified,Comprehensive,2025-08-21,1207168,No
+478,Hyundai,i10,i10 EX,Silver,Petrol,KA42AB0478,2017-03-21,Expired,2027-09-28,MA1wc3914739,ENGeo62701,2017,1,2,11446,1000,BS4,Manual,Certified,Third Party,2026-01-05,1487348,Yes
+479,Volkswagen,Taigun,Taigun ZXi,Black,CNG,KA36AB0479,2024-06-02,Active,2027-07-08,MA1rJ3472901,ENGFQ86270,2017,6,2,102734,1500,BS4,Automatic,Certified,Third Party,2026-05-11,1032608,No
+480,Kia,EV6,EV6 SX,Red,CNG,KA45AB0480,2022-10-22,Active,2026-03-30,MA1Er4945714,ENGAH71797,2019,6,2,108528,1500,BS6,Manual,Certified,Zero Depreciation,2026-05-23,801122,Yes
+481,Skoda,Kushaq,Kushaq EX,Green,Electric,KA26AB0481,2019-07-05,Expired,2027-12-25,MA1lf4352565,ENGhm21590,2018,12,2,58396,1200,BS4,Manual,Non certified,Third Party,2025-12-02,766681,Yes
+482,Renault,Triber,Triber ZXi,Green,Petrol,KA34AB0482,2018-07-29,Expired,2025-12-24,MA1uj1823649,ENGbM74193,2013,8,3,10425,2000,BS4,Automatic,Certified,Zero Depreciation,2026-04-23,1394910,Yes
+483,Renault,Kiger,Kiger EX,Grey,CNG,KA21AB0483,2017-02-19,Active,2026-09-26,MA1EV6139510,ENGVK20321,2018,9,4,18968,1500,BS6,Automatic,Certified,Comprehensive,2025-08-16,930768,Yes
+484,Kia,EV6,EV6 ZXi,Green,CNG,KA58AB0484,2017-04-13,Expired,2026-07-26,MA1xa3721885,ENGXA70847,2014,9,2,132963,1500,BS4,Automatic,Non certified,Zero Depreciation,2026-04-03,569168,Yes
+485,Hyundai,i10,i10 VXi,Green,Electric,KA69AB0485,2023-07-11,Expired,2026-01-24,MA1Bi9678215,ENGjK48805,2019,10,2,63457,2000,BS6,Manual,Non certified,Zero Depreciation,2025-10-21,679479,No
+486,Tata,Punch,Punch SX,Red,Diesel,KA04AB0486,2021-07-05,Expired,2026-11-11,MA1qD1309036,ENGMy25977,2015,10,1,123733,1500,BS4,Manual,Non certified,Third Party,2026-03-14,417196,Yes
+487,Renault,Kiger,Kiger EX,Green,Electric,KA92AB0487,2017-07-13,Active,2026-12-24,MA1BM6226698,ENGcB16172,2022,2,3,46310,1000,BS6,Automatic,Certified,Third Party,2026-01-25,425521,Yes
+488,Honda,Amaze,Amaze LXi,Silver,Electric,KA47AB0488,2020-10-25,Expired,2026-10-17,MA1nJ2361349,ENGKM02952,2019,9,4,53484,1500,BS4,Manual,Certified,Zero Depreciation,2026-05-17,343533,Yes
+489,Renault,Kwid,Kwid LXi,Blue,Electric,KA73AB0489,2023-04-17,Expired,2027-06-11,MA1jb6869037,ENGtA84295,2016,2,2,107188,1200,BS6,Automatic,Certified,Comprehensive,2026-02-08,608155,Yes
+490,Hyundai,Venue,Venue LXi,Silver,Petrol,KA74AB0490,2021-10-24,Active,2025-07-28,MA1jv6996670,ENGDA16637,2013,1,3,129810,1500,BS4,Automatic,Certified,Comprehensive,2026-05-14,1375797,Yes
+491,Toyota,Glanza,Glanza EX,Red,Petrol,KA52AB0491,2020-03-14,Expired,2025-08-11,MA1ZZ0307649,ENGYR45575,2022,6,1,133411,800,BS6,Automatic,Certified,Third Party,2026-03-08,379805,No
+492,Tata,Nexon,Nexon ZXi,Black,CNG,KA47AB0492,2018-04-15,Active,2028-01-23,MA1dm0495983,ENGcx09834,2014,7,1,25137,800,BS4,Automatic,Certified,Zero Depreciation,2025-08-25,1075596,Yes
+493,Hyundai,Verna,Verna ZXi,Green,CNG,KA29AB0493,2021-08-26,Active,2027-11-12,MA1si6644510,ENGCb53060,2014,9,2,37705,800,BS6,Automatic,Non certified,Comprehensive,2025-09-06,1147670,No
+494,Volkswagen,Taigun,Taigun VXi,Blue,Petrol,KA75AB0494,2024-02-22,Expired,2026-04-13,MA1pN9717248,ENGBd84068,2016,7,3,99845,1500,BS4,Manual,Non certified,Third Party,2026-04-20,247997,Yes
+495,Mahindra,XUV300,XUV300 VXi,White,Diesel,KA78AB0495,2017-12-13,Active,2028-04-18,MA1fj8714376,ENGpQ37691,2021,5,1,83158,1200,BS4,Manual,Certified,Comprehensive,2026-05-21,280800,Yes
+496,Tata,Tiago,Tiago LXi,Grey,Petrol,KA41AB0496,2018-11-22,Active,2025-11-29,MA1sz2052628,ENGdy53186,2020,11,4,141438,2000,BS6,Manual,Certified,Comprehensive,2025-10-02,1135800,No
+497,Renault,Kwid,Kwid EX,Grey,Electric,KA73AB0497,2023-07-23,Active,2025-12-28,MA1Fq9031510,ENGpm02834,2017,3,1,78682,1200,BS6,Manual,Certified,Third Party,2025-11-30,1155849,No
+498,Mahindra,XUV300,XUV300 SX,White,Electric,KA63AB0498,2017-06-13,Expired,2028-06-23,MA1so9736705,ENGjU37756,2022,9,4,10505,1000,BS4,Automatic,Non certified,Zero Depreciation,2025-12-14,636527,Yes
+499,Renault,Kiger,Kiger EX,Green,CNG,KA84AB0499,2021-05-26,Expired,2028-03-09,MA1ah6926856,ENGyM58070,2021,10,3,66337,1000,BS4,Manual,Certified,Comprehensive,2026-02-21,217369,No
+500,Kia,Carens,Carens SX,Black,CNG,KA75AB0500,2019-06-04,Active,2026-06-16,MA1KB8701956,ENGVn31047,2020,8,4,146738,800,BS6,Manual,Certified,Third Party,2025-08-21,1045589,Yes
+`;
 
-            for (const brand of brands) {
-                const res = await db.query(
-                    `INSERT INTO brands (brand_name, brand_logo_url)
-                     VALUES ($1, $2)
-                     ON CONFLICT (brand_name) DO NOTHING
-                     RETURNING brand_id;`,
-                    [brand.name, brand.logoUrl]
-                );
-                if (res.rows.length > 0) {
-                    console.log(`Inserted brand: ${brand.name} with ID: ${res.rows[0].brand_id}`);
+        // Parse CSV data
+        const lines = rawCsvData.trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.trim());
+        const carsData = [];
+        const uniqueBrands = new Set();
+
+        // Process only the first 500 cars (lines[1] to lines[500])
+        for (let i = 1; i <= 500 && i < lines.length; i++) {
+            const values = lines[i].split(',');
+            const car = {};
+            headers.forEach((header, index) => {
+                let value = values[index];
+                // Clean up values (remove extra spaces, handle "Yes"/"No" to boolean)
+                if (value) {
+                    value = value.trim();
+                    if (header === 'Ready for Sales') {
+                        car[header.replace(/[^a-zA-Z0-9]/g, '')] = value.toLowerCase() === 'yes';
+                    } else if (header === 'Estimated Selling Price') {
+                        car[header.replace(/[^a-zA-Z0-9]/g, '')] = parseFloat(value.replace(/,/g, ''));
+                    } else if (header.includes('Date')) {
+                        car[header.replace(/[^a-zA-Z0-9]/g, '')] = value; // Keep as YYYY-MM-DD string for DB
+                    } else if (header === 'Mileage (KM)') {
+                         car[header.replace(/[^a-zA-Z0-9]/g, '')] = parseInt(value.replace(/,/g, ''));
+                    } else if (header === 'Cubic Capacity (CC)') {
+                         car[header.replace(/[^a-zA-Z0-9]/g, '')] = parseInt(value.replace(/,/g, ''));
+                    } else if (header === 'Manufacturing Year') {
+                         car[header.replace(/[^a-zA-Z0-9]/g, '')] = parseInt(value);
+                    } else if (header === 'Owner Serial Number') {
+                         car[header.replace(/[^a-zA-Z0-9]/g, '')] = parseInt(value);
+                    }
+                    else {
+                        car[header.replace(/[^a-zA-Z0-9]/g, '')] = value;
+                    }
                 } else {
-                    console.log(`Brand already exists: ${brand.name}`);
+                    car[header.replace(/[^a-zA-Z0-9]/g, '')] = null; // Handle empty values
                 }
-            }
-
-            // Fetch brand IDs for car insertion
-            const brandMap = {};
-            const brandRes = await db.query('SELECT brand_id, brand_name FROM brands;');
-            brandRes.rows.forEach(row => {
-                brandMap[row.brand_name] = row.brand_id;
             });
+            carsData.push(car);
+            uniqueBrands.add(car.Make); // Collect unique brands
+        }
 
-            // Insert Cars (with detailed columns)
-            const cars = [
-                {
-                    serial_number: "C001", make: "Maruti Suzuki", model: "Swift Dzire", variant: "VXI", color: "White",
-                    fuel_type: "Petrol", registration_number: "KA01AB1234", registration_date: "2018-05-15", rc_status: "Active",
-                    rc_expiry_date: "2033-05-15", chassis_number: "CHAS001", engine_number: "ENG001", manufacturing_year: 2018,
-                    manufacturing_month: "May", owner_serial_number: 1, mileage_km: 60000, cubic_capacity_cc: 1197,
-                    emission_norms: "BS4", transmission_type: "Manual", vehicle_category: "Sedan", insurance_type: "Comprehensive",
-                    insurance_expiry_date: "2025-08-01", estimated_selling_price: 4.50, ready_for_sales: true,
-                    image_url: "https://placehold.co/400x200/FF0000/FFFFFF?text=Swift+Dzire+C001"
-                },
-                {
-                    serial_number: "C002", make: "Hyundai", model: "Creta", variant: "SX", color: "Silver",
-                    fuel_type: "Diesel", registration_number: "DL05CD5678", registration_date: "2019-11-20", rc_status: "Active",
-                    rc_expiry_date: "2034-11-20", chassis_number: "CHAS002", engine_number: "ENG002", manufacturing_year: 2019,
-                    manufacturing_month: "November", owner_serial_number: 2, mileage_km: 45000, cubic_capacity_cc: 1493,
-                    emission_norms: "BS6", transmission_type: "Manual", vehicle_category: "SUV", insurance_type: "Third Party",
-                    insurance_expiry_date: "2025-10-01", estimated_selling_price: 9.80, ready_for_sales: true,
-                    image_url: "https://placehold.co/400x200/0000FF/FFFFFF?text=Creta+C002"
-                },
-                {
-                    serial_number: "C003", make: "Maruti Suzuki", model: "Baleno", variant: "Zeta", color: "Blue",
-                    fuel_type: "Petrol", registration_number: "MH12EF9012", registration_date: "2020-03-10", rc_status: "Active",
-                    rc_expiry_date: "2035-03-10", chassis_number: "CHAS003", engine_number: "ENG003", manufacturing_year: 2020,
-                    manufacturing_month: "March", owner_serial_number: 1, mileage_km: 30000, cubic_capacity_cc: 1197,
-                    emission_norms: "BS6", transmission_type: "Automatic", vehicle_category: "Hatchback", insurance_type: "Comprehensive",
-                    insurance_expiry_date: "2026-02-01", estimated_selling_price: 7.20, ready_for_sales: true,
-                    image_url: "https://placehold.co/400x200/00FF00/FFFFFF?text=Baleno+C003"
-                },
-                {
-                    serial_number: "C004", make: "Tata Motors", model: "Nexon", variant: "XZ+", color: "Red",
-                    fuel_type: "Petrol", registration_number: "UP16GH3456", registration_date: "2022-01-25", rc_status: "Active",
-                    rc_expiry_date: "2037-01-25", chassis_number: "CHAS004", engine_number: "ENG004", manufacturing_year: 2022,
-                    manufacturing_month: "January", owner_serial_number: 1, mileage_km: 15000, cubic_capacity_cc: 1199,
-                    emission_norms: "BS6", transmission_type: "Manual", vehicle_category: "Compact SUV", insurance_type: "Comprehensive",
-                    insurance_expiry_date: "2026-12-01", estimated_selling_price: 11.50, ready_for_sales: true,
-                    image_url: "https://placehold.co/400x200/FF00FF/FFFFFF?text=Nexon+C004"
-                },
-                {
-                    serial_number: "C005", make: "Hyundai", model: "i20", variant: "Sportz", color: "Grey",
-                    fuel_type: "Petrol", registration_number: "TN07IJ7890", registration_date: "2021-09-01", rc_status: "Active",
-                    rc_expiry_date: "2036-09-01", chassis_number: "CHAS005", engine_number: "ENG005", manufacturing_year: 2021,
-                    manufacturing_month: "September", owner_serial_number: 1, mileage_km: 20000, cubic_capacity_cc: 1197,
-                    emission_norms: "BS6", transmission_type: "Automatic", vehicle_category: "Hatchback", insurance_type: "Comprehensive",
-                    insurance_expiry_date: "2026-08-01", estimated_selling_price: 6.00, ready_for_sales: true,
-                    image_url: "https://placehold.co/400x200/FFFF00/000000?text=i20+C005"
-                },
-                {
-                    serial_number: "C006", make: "Maruti Suzuki", model: "Ertiga", variant: "VXI", color: "White",
-                    fuel_type: "Petrol", registration_number: "GJ06KL2345", registration_date: "2019-07-01", rc_status: "Active",
-                    rc_expiry_date: "2034-07-01", chassis_number: "CHAS006", engine_number: "ENG006", manufacturing_year: 2019,
-                    manufacturing_month: "July", owner_serial_number: 1, mileage_km: 70000, cubic_capacity_cc: 1462,
-                    emission_norms: "BS4", transmission_type: "Manual", vehicle_category: "MPV", insurance_type: "Comprehensive",
-                    insurance_expiry_date: "2025-09-01", estimated_selling_price: 6.80, ready_for_sales: true,
-                    image_url: "https://placehold.co/400x200/00FFFF/000000?text=Ertiga+C006"
-                },
-                {
-                    serial_number: "C007", make: "Hyundai", model: "Venue", variant: "S", color: "Blue",
-                    fuel_type: "Petrol", registration_number: "KA02MN6789", registration_date: "2020-02-14", rc_status: "Active",
-                    rc_expiry_date: "2035-02-14", chassis_number: "CHAS007", engine_number: "ENG007", manufacturing_year: 2020,
-                    manufacturing_month: "February", owner_serial_number: 1, mileage_km: 25000, cubic_capacity_cc: 1197,
-                    emission_norms: "BS6", transmission_type: "Automatic", vehicle_category: "Compact SUV", insurance_type: "Comprehensive",
-                    insurance_expiry_date: "2026-01-01", estimated_selling_price: 8.50, ready_for_sales: true,
-                    image_url: "https://placehold.co/400x200/800080/FFFFFF?text=Venue+C007"
-                },
-                {
-                    serial_number: "C008", make: "Tata Motors", model: "Tiago", variant: "XT", color: "White",
-                    fuel_type: "Petrol", registration_number: "DL01OP1234", registration_date: "2021-04-01", rc_status: "Active",
-                    rc_expiry_date: "2036-04-01", chassis_number: "CHAS008", engine_number: "ENG008", manufacturing_year: 2021,
-                    manufacturing_month: "April", owner_serial_number: 1, mileage_km: 35000, cubic_capacity_cc: 1199,
-                    emission_norms: "BS6", transmission_type: "Manual", vehicle_category: "Hatchback", insurance_type: "Third Party",
-                    insurance_expiry_date: "2026-03-01", estimated_selling_price: 4.20, ready_for_sales: true,
-                    image_url: "https://placehold.co/400x200/FFA500/FFFFFF?text=Tiago+C008"
-                }
-            ];
+        // Insert Brands
+        const brandsToInsert = Array.from(uniqueBrands).map(name => ({
+            name: name,
+            // You can generate a simple placeholder logo URL here or use a default one
+            logoUrl: `https://placehold.co/100x50/000/FFF?text=${encodeURIComponent(name).replace(/%20/g, '+')}`
+        }));
 
-            for (const car of cars) {
-                const brandId = brandMap[car.make];
-                if (!brandId) {
-                    console.warn(`Skipping car ${car.serial_number}: Brand '${car.make}' not found.`);
-                    continue;
-                }
-                await db.query(
-                    `INSERT INTO cars (
-                        serial_number, brand_id, model, variant, color, fuel_type,
-                        registration_number, registration_date, rc_status, rc_expiry_date,
-                        chassis_number, engine_number, manufacturing_year, manufacturing_month,
-                        owner_serial_number, mileage_km, cubic_capacity_cc, emission_norms,
-                        transmission_type, vehicle_category, insurance_type, insurance_expiry_date,
-                        estimated_selling_price, ready_for_sales, image_url
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)
-                    ON CONFLICT (serial_number) DO NOTHING;`,
-                    [
-                        car.serial_number, brandId, car.model, car.variant, car.color, car.fuel_type,
-                        car.registration_number, car.registration_date, car.rc_status, car.rc_expiry_date,
-                        car.chassis_number, car.engine_number, car.manufacturing_year, car.manufacturing_month,
-                        car.owner_serial_number, car.mileage_km, car.cubic_capacity_cc, car.emission_norms,
-                        car.transmission_type, car.vehicle_category, car.insurance_type, car.insurance_expiry_date,
-                        car.estimated_selling_price, car.ready_for_sales, car.image_url
-                    ]
-                );
-                console.log(`Inserted car: ${car.model} (${car.serial_number})`);
+        const brandMap = {};
+        for (const brand of brandsToInsert) {
+            const res = await db.query(
+                `INSERT INTO brands (brand_name, brand_logo_url)
+                 VALUES ($1, $2)
+                 ON CONFLICT (brand_name) DO UPDATE SET brand_logo_url = EXCLUDED.brand_logo_url
+                 RETURNING brand_id;`,
+                [brand.name, brand.logoUrl]
+            );
+            brandMap[brand.name] = res.rows[0].brand_id;
+            console.log(`Processed brand: ${brand.name}`);
+        }
+
+        // Insert Cars
+        for (const car of carsData) {
+            const brandId = brandMap[car.Make];
+            if (!brandId) {
+                console.warn(`Skipping car ${car.SerialNumber}: Brand '${car.Make}' not found in brandMap.`);
+                continue;
             }
 
-            console.log("Database seeding complete!");
-        } catch (error) {
-            console.error("Error seeding database:", error);
-        } finally {
-            // Do NOT close the pool here if this function is called from a web service,
-            // as it will prevent subsequent API calls.
-            // db.pool.end(); // ONLY call this if seed.js is run as a standalone script
+            // Map CSV headers to your DB column names
+            await db.query(
+                `INSERT INTO cars (
+                    serial_number, brand_id, model, variant, color, fuel_type,
+                    registration_number, registration_date, rc_status, rc_expiry_date,
+                    chassis_number, engine_number, manufacturing_year, manufacturing_month,
+                    owner_serial_number, mileage_km, cubic_capacity_cc, emission_norms,
+                    transmission_type, vehicle_category, insurance_type, insurance_expiry_date,
+                    estimated_selling_price, ready_for_sales, image_url
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)
+                ON CONFLICT (serial_number) DO NOTHING;`,
+                [
+                    car.SerialNumber,
+                    brandId,
+                    car.Model,
+                    car.Variant,
+                    car.Color,
+                    car.FuelType,
+                    car.RegistrationNumber,
+                    car.RegistrationDate, // Stored as string, DB will cast to DATE
+                    car.RCStatus,
+                    car.RCExpiryDate,     // Stored as string, DB will cast to DATE
+                    car.ChassisNumber,
+                    car.EngineNumber,
+                    car.ManufacturingYear,
+                    car.ManufacturingMonth,
+                    car.OwnerSerialNumber,
+                    car.MileageKM,
+                    car.CubicCapacityCC,
+                    car.EmissionNorms,
+                    car.TransmissionType,
+                    car.VehicleCategory,
+                    car.InsuranceType,
+                    car.InsuranceExpiryDate, // Stored as string, DB will cast to DATE
+                    car.EstimatedSellingPrice,
+                    car.ReadyforSales,
+                    // For image_url, you'll need to map SerialNumber to your Google Drive URLs
+                    // For example, if you have a URL for car '1', '2', etc.
+                    // You'll need to manually create these mappings or host them publicly.
+                    // For now, using a placeholder based on SerialNumber
+                    `https://placehold.co/400x200/000/FFF?text=Car+${car.SerialNumber}`
+                ]
+            );
+            console.log(`Inserted car: ${car.Model} (${car.SerialNumber})`);
         }
-    }
 
-    // Export the function so app.js can import and call it
-    module.exports = {
-        seedDatabase
-    };
-    
+        console.log("Database seeding complete!");
+    } catch (error) {
+        console.error("Error seeding database:", error);
+    } finally {
+        
+    }
+}
+
+// Export the function so app.js can import and call it
+module.exports = {
+    seedDatabase
+};
